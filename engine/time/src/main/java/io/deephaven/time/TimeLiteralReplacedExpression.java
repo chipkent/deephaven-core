@@ -91,7 +91,7 @@ public class TimeLiteralReplacedExpression {
             if (DateTimeUtils.parseDateTimeQuiet(s) != null) {
                 matcher.appendReplacement(convertedFormula, "_dateTime" + dateTimeIndex);
                 instanceVariablesString.append("        private DateTime _dateTime").append(dateTimeIndex)
-                        .append("=DateTimeUtils.parseDateTime(\"")
+                        .append("=DateTimeUtils.parseInstant(\"")
                         .append(expression, matcher.start() + 1, matcher.end() - 1).append("\");\n");
                 newVariables.put("_dateTime" + dateTimeIndex, DateTime.class);
 

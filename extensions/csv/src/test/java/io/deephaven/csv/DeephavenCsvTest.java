@@ -6,13 +6,13 @@ package io.deephaven.csv;
 import io.deephaven.csv.util.CsvReaderException;
 import io.deephaven.engine.table.Table;
 import io.deephaven.engine.util.TableTools;
-import io.deephaven.time.DateTime;
 import org.apache.commons.io.input.ReaderInputStream;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
@@ -22,10 +22,10 @@ public class DeephavenCsvTest {
     @Test
     public void dateTimeCustomTimezone() throws CsvReaderException {
         final ZoneId nycId = ZoneId.of("America/New_York");
-        final DateTime DATETIME_A =
-                DateTime.of(LocalDateTime.of(2019, 5, 2, 19, 33, 12, 123456789).atZone(nycId).toInstant());
-        final DateTime DATETIME_B =
-                DateTime.of(LocalDateTime.of(2017, 2, 2, 3, 18, 55, 987654321).atZone(nycId).toInstant());
+        final Instant DATETIME_A =
+                LocalDateTime.of(2019, 5, 2, 19, 33, 12, 123456789).atZone(nycId).toInstant();
+        final Instant DATETIME_B =
+                LocalDateTime.of(2017, 2, 2, 3, 18, 55, 987654321).atZone(nycId).toInstant();
 
         final String input = "" +
                 "Timestamp\n" +

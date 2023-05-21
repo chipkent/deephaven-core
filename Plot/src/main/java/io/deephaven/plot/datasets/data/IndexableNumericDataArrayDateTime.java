@@ -5,17 +5,19 @@ package io.deephaven.plot.datasets.data;
 
 import io.deephaven.plot.errors.PlotInfo;
 import io.deephaven.plot.util.ArgumentValidations;
-import io.deephaven.time.DateTime;
+import io.deephaven.time.DateTimeUtils;
+
+import java.time.Instant;
 
 /**
- * {@link IndexableNumericData} dataset comprised of an array of {@link DateTime}s.
+ * {@link IndexableNumericData} dataset comprised of an array of {@link Instant}s.
  *
  * Date values are accessed as nanoseconds from epoch. Data conversion to double means these values are accurate to
  * about 250 nanoseconds.
  */
 public class IndexableNumericDataArrayDateTime extends IndexableNumericData {
     private static final long serialVersionUID = 2006200987348909028L;
-    private final DateTime[] data;
+    private final Instant[] data;
 
     /**
      * Creates an IndexableNumericDataArrayDateTime instance.
@@ -24,7 +26,7 @@ public class IndexableNumericDataArrayDateTime extends IndexableNumericData {
      * @param data data
      * @param plotInfo plot information
      */
-    public IndexableNumericDataArrayDateTime(DateTime[] data, final PlotInfo plotInfo) {
+    public IndexableNumericDataArrayDateTime(Instant[] data, final PlotInfo plotInfo) {
         super(plotInfo);
         ArgumentValidations.assertNotNull(data, "data", getPlotInfo());
         this.data = data;
@@ -41,9 +43,9 @@ public class IndexableNumericDataArrayDateTime extends IndexableNumericData {
             return Double.NaN;
         }
         double result = Double.NaN;
-        DateTime v = data[i];
+        Instant v = data[i];
         if (v != null) {
-            result = v.getNanos();
+            result = DateTimeUtils.epochNanos(v);
         }
 
         return result;

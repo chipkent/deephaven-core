@@ -311,6 +311,19 @@ public class DateTimeUtils {
         return Objects.requireNonNullElse(clock, Clock.system());
     }
 
+    /**
+     * Provides the current date time according to a clock.
+     *
+     * @param clock clock.
+     * @return the current date time according to the clock.
+     */
+    @ScriptApi
+    @NotNull
+    //TODO: test me
+    public static Instant now(final Clock clock) {
+        return Instant.ofEpochSecond(0, clock.currentTimeNanos());
+    }
+
     //TODO: instant
     /**
      * Provides the current {@link DateTime} according to the current clock.
@@ -324,8 +337,21 @@ public class DateTimeUtils {
      */
     @ScriptApi
     @NotNull
-    public static DateTime now() {
+    public static Instant now() {
         return DateTime.of(currentClock());
+    }
+
+    /**
+     * Provides the current date time, with millisecond resolution, according to a clock.
+     *
+     * @param clock clock.
+     * @return the current date time according to the clock.
+     */
+    @ScriptApi
+    @NotNull
+    //TODO: test me
+    public static Instant nowMillisResolution(final Clock clock) {
+        return Instant.ofEpochMilli(clock.currentTimeMillis());
     }
 
     //TODO: instant
@@ -355,7 +381,7 @@ public class DateTimeUtils {
      */
     @ScriptApi
     @NotNull
-    public static DateTime nowSystem() {
+    public static Instant nowSystem() {
         return DateTime.now();
     }
 

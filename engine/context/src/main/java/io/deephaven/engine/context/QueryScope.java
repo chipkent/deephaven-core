@@ -3,7 +3,6 @@
  */
 package io.deephaven.engine.context;
 
-import io.deephaven.time.DateTime;
 import io.deephaven.time.DateTimeUtils;
 import io.deephaven.hash.KeyedObjectHashMap;
 import io.deephaven.hash.KeyedObjectKey;
@@ -15,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.Period;
 import java.util.*;
 
@@ -92,7 +92,7 @@ public abstract class QueryScope implements LogOutputAppendable {
                     && stringValue.charAt(stringValue.length() - 1) == '\'') {
                 final String datetimeString = stringValue.substring(1, stringValue.length() - 1);
 
-                final DateTime dateTime = DateTimeUtils.parseDateTimeQuiet(datetimeString);
+                final Instant dateTime = DateTimeUtils.parseInstantQuiet(datetimeString);
                 if (dateTime != null) {
                     return dateTime;
                 }

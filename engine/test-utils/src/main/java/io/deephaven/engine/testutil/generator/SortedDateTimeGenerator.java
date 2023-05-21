@@ -1,38 +1,39 @@
 package io.deephaven.engine.testutil.generator;
 
-import io.deephaven.time.DateTime;
+import io.deephaven.time.DateTimeUtils;
 
+import java.time.Instant;
 import java.util.Random;
 
-public class SortedDateTimeGenerator extends AbstractSortedGenerator<DateTime> {
-    private final DateTime minTime;
-    private final DateTime maxTime;
+public class SortedDateTimeGenerator extends AbstractSortedGenerator<Instant> {
+    private final Instant minTime;
+    private final Instant maxTime;
 
-    public SortedDateTimeGenerator(DateTime minTime, DateTime maxTime) {
+    public SortedDateTimeGenerator(Instant minTime, Instant maxTime) {
         this.minTime = minTime;
         this.maxTime = maxTime;
     }
 
-    DateTime maxValue() {
+    Instant maxValue() {
         return maxTime;
     }
 
-    DateTime minValue() {
+    Instant minValue() {
         return minTime;
     }
 
-    DateTime makeValue(DateTime floor, DateTime ceiling, Random random) {
-        final long longFloor = floor.getNanos();
-        final long longCeiling = ceiling.getNanos();
+    Instant makeValue(Instant floor, Instant ceiling, Random random) {
+        final long longFloor = DateTimeUtils.epochNanos(floor);
+        final long longCeiling = DateTimeUtils.epochNanos(ceiling);
 
         final long range = longCeiling - longFloor + 1L;
         final long nextLong = Math.abs(random.nextLong()) % range;
 
-        return new DateTime(longFloor + (nextLong % range));
+        return DateTimeUtils.epochNanosToInstant(longFloor + (nextLong % range));
     }
 
     @Override
-    public Class<DateTime> getType() {
-        return DateTime.class;
+    public Class<Instant> getType() {
+        return Instant.class;
     }
 }

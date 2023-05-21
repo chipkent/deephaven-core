@@ -19,7 +19,7 @@ public class TestTimeLiteralReplacedExpression extends BaseArrayTestCase {
         newVars.put("_dateTime0", DateTime.class);
         TestCase.assertEquals(newVars, tlre.getNewVariables());
 
-        TestCase.assertEquals("        private DateTime _dateTime0=DateTimeUtils.parseDateTime(\"2010-01-01T12:34:56.891 NY\");\n", tlre.getInstanceVariablesString());
+        TestCase.assertEquals("        private DateTime _dateTime0=DateTimeUtils.parseInstant(\"2010-01-01T12:34:56.891 NY\");\n", tlre.getInstanceVariablesString());
 
     }
 

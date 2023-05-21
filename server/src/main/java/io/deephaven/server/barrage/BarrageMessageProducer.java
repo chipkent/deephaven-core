@@ -41,7 +41,7 @@ import io.deephaven.extensions.barrage.util.StreamReader;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.Logger;
 import io.deephaven.server.util.Scheduler;
-import io.deephaven.time.DateTime;
+import io.deephaven.time.DateTimeUtils;
 import io.deephaven.util.SafeCloseable;
 import io.deephaven.util.SafeCloseableArray;
 import io.deephaven.util.datastructures.LongSizedDataStructure;
@@ -52,6 +52,7 @@ import org.jetbrains.annotations.Nullable;
 import org.HdrHistogram.Histogram;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
@@ -2203,7 +2204,7 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
                 return;
             }
 
-            final DateTime now = DateTime.ofMillis(scheduler);
+            final Instant now = DateTimeUtils.nowMillisResolution(scheduler);
             scheduler.runAfterDelay(BarragePerformanceLog.CYCLE_DURATION_MILLIS, this);
 
             final BarrageSubscriptionPerformanceLogger logger =
@@ -2225,7 +2226,7 @@ public class BarrageMessageProducer<MessageView> extends LivenessArtifact
             }
         }
 
-        private void flush(final DateTime now, final BarrageSubscriptionPerformanceLogger logger, final Histogram hist,
+        private void flush(final Instant now, final BarrageSubscriptionPerformanceLogger logger, final Histogram hist,
                 final String statType) throws IOException {
             if (hist.getTotalCount() == 0) {
                 return;

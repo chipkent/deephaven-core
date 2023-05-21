@@ -1054,7 +1054,7 @@ public class QueryTableSelectUpdateTest {
 
     @Test
     public void testStaticSelectFlattenDateTimeCol() {
-        final Table input = emptyTable(10).view("A=ii", "B = DateTime.now()").where("A % 2 == 0");
+        final Table input = emptyTable(10).view("A=ii", "B = nowSysetm()").where("A % 2 == 0");
         final Table output = input.select("B");
         Assert.assertEquals(5, output.size());
         Assert.assertTrue(output.isFlat());

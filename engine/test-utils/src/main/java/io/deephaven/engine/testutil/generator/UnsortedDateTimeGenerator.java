@@ -1,40 +1,41 @@
 package io.deephaven.engine.testutil.generator;
 
-import io.deephaven.time.DateTime;
+import io.deephaven.time.DateTimeUtils;
 
+import java.time.Instant;
 import java.util.Random;
 
-public class UnsortedDateTimeGenerator extends AbstractGenerator<DateTime> {
-    private final DateTime minTime;
-    private final DateTime maxTime;
+public class UnsortedDateTimeGenerator extends AbstractGenerator<Instant> {
+    private final Instant minTime;
+    private final Instant maxTime;
     private final double nullFrac;
 
-    public UnsortedDateTimeGenerator(DateTime minTime, DateTime maxTime) {
+    public UnsortedDateTimeGenerator(Instant minTime, Instant maxTime) {
         this(minTime, maxTime, 0);
     }
 
-    public UnsortedDateTimeGenerator(DateTime minTime, DateTime maxTime, double nullFrac) {
+    public UnsortedDateTimeGenerator(Instant minTime, Instant maxTime, double nullFrac) {
         this.minTime = minTime;
         this.maxTime = maxTime;
         this.nullFrac = nullFrac;
     }
 
     @Override
-    public Class<DateTime> getType() {
-        return DateTime.class;
+    public Class<Instant> getType() {
+        return Instant.class;
     }
 
     @Override
-    public DateTime nextValue(Random random) {
+    public Instant nextValue(Random random) {
         if (nullFrac > 0 && random.nextDouble() < nullFrac) {
             return null;
         }
-        final long longFloor = minTime.getNanos();
-        final long longCeiling = maxTime.getNanos();
+        final long longFloor = DateTimeUtils.epochNanos(minTime);
+        final long longCeiling = DateTimeUtils.epochNanos(maxTime);
 
         final long range = longCeiling - longFloor + 1L;
         final long nextLong = Math.abs(random.nextLong()) % range;
 
-        return new DateTime(longFloor + (nextLong % range));
+        return DateTimeUtils.epochNanosToInstant(longFloor + (nextLong % range));
     }
 }

@@ -38,7 +38,6 @@ import io.deephaven.engine.updategraph.UpdateGraphProcessor;
 import io.deephaven.engine.util.TableTools;
 import io.deephaven.parquet.table.ParquetTools;
 import io.deephaven.test.types.OutOfBandTest;
-import io.deephaven.time.DateTime;
 import io.deephaven.time.DateTimeUtils;
 import io.deephaven.util.QueryConstants;
 import io.deephaven.util.SafeCloseable;
@@ -56,6 +55,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -840,8 +840,8 @@ public class QueryTableTest extends QueryTableTestBase {
 
         final int size = 500;
 
-        final DateTime startTime = DateTimeUtils.parseDateTime("2019-04-30T16:00:00 NY");
-        final DateTime endTime = DateTimeUtils.parseDateTime("2019-04-30T16:01:00 NY");
+        final Instant startTime = DateTimeUtils.parseInstant("2019-04-30T16:00:00 NY");
+        final Instant endTime = DateTimeUtils.parseInstant("2019-04-30T16:01:00 NY");
 
         final ColumnInfo<?, ?>[] columnInfo;
         final QueryTable table = getTable(size, random,
@@ -850,8 +850,8 @@ public class QueryTableTest extends QueryTableTestBase {
                         new UnsortedDateTimeLongGenerator(startTime, endTime),
                         new IntGenerator(0, 1000)));
 
-        final DateTime lower = DateTimeUtils.plus(startTime, DateTimeUtils.SECOND);
-        final DateTime upper = DateTimeUtils.plus(startTime, DateTimeUtils.SECOND * 2);
+        final Instant lower = DateTimeUtils.plus(startTime, DateTimeUtils.SECOND);
+        final Instant upper = DateTimeUtils.plus(startTime, DateTimeUtils.SECOND * 2);
 
         final EvalNuggetInterface[] en = new EvalNuggetInterface[] {
                 new TableComparator(
@@ -901,8 +901,8 @@ public class QueryTableTest extends QueryTableTestBase {
 
         final int size = 500;
 
-        final DateTime startTime = DateTimeUtils.parseDateTime("2019-04-30T16:00:00 NY");
-        final DateTime endTime = DateTimeUtils.parseDateTime("2019-04-30T16:01:00 NY");
+        final Instant startTime = DateTimeUtils.parseInstant("2019-04-30T16:00:00 NY");
+        final Instant endTime = DateTimeUtils.parseInstant("2019-04-30T16:01:00 NY");
 
         final ColumnInfo<?, ?>[] columnInfo;
         final QueryTable table = getTable(size, random,
@@ -910,8 +910,8 @@ public class QueryTableTest extends QueryTableTestBase {
                         new UnsortedDateTimeGenerator(startTime, endTime, 0.1),
                         new IntGenerator(0, 1000)));
 
-        final DateTime lower = DateTimeUtils.plus(startTime, DateTimeUtils.SECOND);
-        final DateTime upper = DateTimeUtils.plus(startTime, DateTimeUtils.SECOND * 2);
+        final Instant lower = DateTimeUtils.plus(startTime, DateTimeUtils.SECOND);
+        final Instant upper = DateTimeUtils.plus(startTime, DateTimeUtils.SECOND * 2);
 
         final EvalNuggetInterface[] en = new EvalNuggetInterface[] {
                 new TableComparator(
@@ -2226,7 +2226,7 @@ public class QueryTableTest extends QueryTableTestBase {
                         DateTimeUtils.now(),
                         DateTimeUtils.now()));
         assertEquals(queryTable.groupBy("Sym").getDefinition().getColumn("Timestamp").getComponentType(),
-                DateTime.class);
+                Instant.class);
         show(queryTable.update("x = Timestamp_[0]"));
         show(queryTable.update("TimeinSeconds=round((maxObj(Timestamp_)-minObj(Timestamp_))/1000000000)"));
         show(queryTable.groupBy("Sym").view("Sym", "x = Timestamp[0]"));
@@ -2891,7 +2891,7 @@ public class QueryTableTest extends QueryTableTestBase {
                 ColumnDefinition.ofBoolean("Truthiness"));
 
         final String[] syms = new String[] {"Apple", "Banana", "Cantaloupe"};
-        final DateTime baseTime = DateTimeUtils.parseDateTime("2019-04-11T09:30 NY");
+        final Instant baseTime = DateTimeUtils.parseInstant("2019-04-11T09:30 NY");
         final long[] dateOffset = new long[] {0, 5, 10, 15, 1, 6, 11, 16, 2, 7};
         final Boolean[] booleans = new Boolean[] {true, false, null, true, false, null, true, false, null, true, false};
         QueryScope.addParam("syms", syms);
@@ -3107,7 +3107,7 @@ public class QueryTableTest extends QueryTableTestBase {
     }
 
     private static class TestDateTimeGroupingSource extends LongAsDateTimeColumnSource
-            implements DeferredGroupingColumnSource<DateTime> {
+            implements DeferredGroupingColumnSource<Instant> {
 
         final GroupingProvider<Object> groupingProvider = new GroupingProvider<>() {
             @Override
@@ -3128,12 +3128,12 @@ public class QueryTableTest extends QueryTableTestBase {
         }
 
         @Override
-        public GroupingProvider<DateTime> getGroupingProvider() {
+        public GroupingProvider<Instant> getGroupingProvider() {
             return null;
         }
 
         @Override
-        public void setGroupingProvider(@Nullable GroupingProvider<DateTime> groupingProvider) {
+        public void setGroupingProvider(@Nullable GroupingProvider<Instant> groupingProvider) {
             throw new UnsupportedOperationException();
         }
     }

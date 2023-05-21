@@ -24,7 +24,6 @@ import io.deephaven.engine.testutil.testcase.RefreshingTableTestCase;
 import io.deephaven.engine.updategraph.UpdateGraphProcessor;
 import io.deephaven.engine.util.TableTools;
 import io.deephaven.test.types.OutOfBandTest;
-import io.deephaven.time.DateTime;
 import io.deephaven.time.DateTimeUtils;
 import io.deephaven.util.QueryConstants;
 import io.deephaven.vector.CharVector;
@@ -34,6 +33,7 @@ import org.junit.experimental.categories.Category;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -538,9 +538,9 @@ public class TestAggBy extends RefreshingTableTestCase {
     }
 
     public void testComboByAggUnique() {
-        final DateTime dtDefault = DateTimeUtils.parseDateTime("1987-10-20T07:45:00.000 NY");
-        final DateTime dt1 = DateTimeUtils.parseDateTime("2021-01-01T00:00:01.000 NY");
-        final DateTime dt2 = DateTimeUtils.parseDateTime("2021-01-01T00:00:02.000 NY");
+        final Instant dtDefault = DateTimeUtils.parseInstant("1987-10-20T07:45:00.000 NY");
+        final Instant dt1 = DateTimeUtils.parseInstant("2021-01-01T00:00:01.000 NY");
+        final Instant dt2 = DateTimeUtils.parseInstant("2021-01-01T00:00:02.000 NY");
 
         QueryTable dataTable = TstUtils.testRefreshingTable(
                 col("USym", "AAPL", "AAPL", "AAPL", /**/ "GOOG", "GOOG", /**/ "SPY", "SPY", "SPY", "SPY", /**/ "VXX"),
@@ -568,7 +568,7 @@ public class TestAggBy extends RefreshingTableTestCase {
                     col("USym", "AAPL", "VXX"),
                     longCol("Account", 1, 5),
                     intCol("Qty", 100, QueryConstants.NULL_INT),
-                    col("Whee", null, (DateTime) null));
+                    col("Whee", null, (Instant) null));
             dataTable.notifyListeners(i(10), i(), i(2));
         });
 
@@ -624,8 +624,8 @@ public class TestAggBy extends RefreshingTableTestCase {
     }
 
     public void testAggUniqueDefaultValues() {
-        final DateTime dt1 = DateTimeUtils.parseDateTime("2021-01-01T00:01:02.000 NY");
-        final DateTime dt2 = DateTimeUtils.parseDateTime("2021-02-02T00:02:03.000 NY");
+        final Instant dt1 = DateTimeUtils.parseInstant("2021-01-01T00:01:02.000 NY");
+        final Instant dt2 = DateTimeUtils.parseInstant("2021-02-02T00:02:03.000 NY");
 
         QueryTable dataTable = TstUtils.testRefreshingTable(
                 col("USym", "NoKey", "SingleVal", "NonUnique", "NonUnique"),

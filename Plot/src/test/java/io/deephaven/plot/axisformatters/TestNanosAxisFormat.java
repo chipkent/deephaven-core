@@ -10,6 +10,7 @@ import io.deephaven.time.TimeZoneAliases;
 import junit.framework.TestCase;
 
 import java.text.NumberFormat;
+import java.time.Instant;
 import java.time.ZoneId;
 
 public class TestNanosAxisFormat extends BaseArrayTestCase {
@@ -41,25 +42,25 @@ public class TestNanosAxisFormat extends BaseArrayTestCase {
     }
 
     public void testFormatString() {
-        final DateTime time = DateTimeUtils.parseDateTime("2017-03-24T14:32:12.345678 MN");
+        final Instant time = DateTimeUtils.parseInstant("2017-03-24T14:32:12.345678 MN");
 
         final NanosAxisFormat formatMN = new NanosAxisFormat(TZ_MN);
         final NanosAxisFormat formatNY = new NanosAxisFormat(TZ_NY);
 
-        assertEquals("2017-03-24", formatMN.getNumberFormatter().format(time.getNanos()));
-        assertEquals("2017-03-24", formatNY.getNumberFormatter().format(time.getNanos()));
+        assertEquals("2017-03-24", formatMN.getNumberFormatter().format(DateTimeUtils.epochNanos(time)));
+        assertEquals("2017-03-24", formatNY.getNumberFormatter().format(DateTimeUtils.epochNanos(time)));
 
         formatMN.setPattern("yyyy-MM-dd'T'HH:mm");
         formatNY.setPattern("yyyy-MM-dd'T'HH:mm");
 
-        assertEquals("2017-03-24T14:32", formatMN.getNumberFormatter().format(time.getNanos()));
-        assertEquals("2017-03-24T15:32", formatNY.getNumberFormatter().format(time.getNanos()));
+        assertEquals("2017-03-24T14:32", formatMN.getNumberFormatter().format(DateTimeUtils.epochNanos(time)));
+        assertEquals("2017-03-24T15:32", formatNY.getNumberFormatter().format(DateTimeUtils.epochNanos(time)));
 
         formatMN.setPattern("HH:mm:ss.SSSS");
         formatNY.setPattern("HH:mm:ss.SSSS");
 
-        assertEquals("14:32:12.3456", formatMN.getNumberFormatter().format(time.getNanos()));
-        assertEquals("15:32:12.3456", formatNY.getNumberFormatter().format(time.getNanos()));
+        assertEquals("14:32:12.3456", formatMN.getNumberFormatter().format(DateTimeUtils.epochNanos(time)));
+        assertEquals("15:32:12.3456", formatNY.getNumberFormatter().format(DateTimeUtils.epochNanos(time)));
 
         try {
             formatMN.setPattern("junkpattern");

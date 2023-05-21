@@ -16,15 +16,15 @@ import io.deephaven.plot.datasets.xy.TestAbstractXYDataSeries;
 import io.deephaven.plot.util.tables.SwappableTable;
 import io.deephaven.plot.util.tables.TableBackedPartitionedTableHandle;
 import io.deephaven.plot.util.tables.TableHandle;
-import io.deephaven.time.DateTime;
 import io.deephaven.time.DateTimeUtils;
 import io.deephaven.util.SafeCloseable;
 
+import java.time.Instant;
 import java.util.ArrayList;
 
 public class TestOHLCDataSeries extends BaseArrayTestCase {
-    private final DateTime[] datesA = {new DateTime(DateTimeUtils.DAY), new DateTime(2 * DateTimeUtils.DAY),
-            new DateTime(3 * DateTimeUtils.DAY), new DateTime(4 * DateTimeUtils.DAY)};
+    private final Instant[] datesA = {DateTimeUtils.epochNanosToInstant(DateTimeUtils.DAY), DateTimeUtils.epochNanosToInstant(2 * DateTimeUtils.DAY),
+            DateTimeUtils.epochNanosToInstant(3 * DateTimeUtils.DAY), DateTimeUtils.epochNanosToInstant(4 * DateTimeUtils.DAY)};
     private final double[] openA = {1.0, 2.0, 1.5, 2.0};
     private final double[] closeA = {1.8, 1.8, 1.7, 2.2};
     private final double[] highA = {2.0, 2.0, 1.8, 2.5};
@@ -59,12 +59,12 @@ public class TestOHLCDataSeries extends BaseArrayTestCase {
         checkOHLCDataSeriesArray(dataSeries2, datesA, closeA, highA, lowA, openA);
     }
 
-    private void checkOHLCDataSeriesArray(OHLCDataSeriesInternal dataSeries, DateTime[] time, double[] open,
+    private void checkOHLCDataSeriesArray(OHLCDataSeriesInternal dataSeries, Instant[] time, double[] open,
             double[] high, double[] low, double[] close) {
         assertEquals(dataSeries.size(), time.length);
 
         for (int i = 0; i < dataSeries.size(); i++) {
-            assertEquals(dataSeries.getX(i), (double) time[i].getNanos());
+            assertEquals(dataSeries.getX(i), (double) DateTimeUtils.epochNanos(time[i]));
             assertEquals(dataSeries.getY(i), close[i]);
             assertEquals(dataSeries.getOpen(i), open[i]);
             assertEquals(dataSeries.getHigh(i), high[i]);

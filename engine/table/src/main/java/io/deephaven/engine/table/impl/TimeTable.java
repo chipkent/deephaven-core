@@ -26,12 +26,12 @@ import io.deephaven.engine.util.TableTools;
 import io.deephaven.function.Numeric;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.io.logger.Logger;
-import io.deephaven.time.DateTime;
 import io.deephaven.time.DateTimeUtils;
 import io.deephaven.util.QueryConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -52,7 +52,7 @@ public final class TimeTable extends QueryTable implements Runnable {
     public static class Builder {
         private UpdateSourceRegistrar registrar = UpdateGraphProcessor.DEFAULT;
         private Clock clock;
-        private DateTime startTime;
+        private Instant startTime;
         private long period;
         private boolean streamTable;
 
@@ -66,13 +66,13 @@ public final class TimeTable extends QueryTable implements Runnable {
             return this;
         }
 
-        public Builder startTime(DateTime startTime) {
+        public Builder startTime(Instant startTime) {
             this.startTime = startTime;
             return this;
         }
 
         public Builder startTime(String startTime) {
-            this.startTime = DateTimeUtils.parseDateTime(startTime);
+            this.startTime = DateTimeUtils.parseInstant(startTime);
             return this;
         }
 
@@ -110,7 +110,7 @@ public final class TimeTable extends QueryTable implements Runnable {
     private final boolean isStreamTable;
 
     public TimeTable(UpdateSourceRegistrar registrar, Clock clock,
-            @Nullable DateTime startTime, long period, boolean isStreamTable) {
+            @Nullable Instant startTime, long period, boolean isStreamTable) {
         super(RowSetFactory.empty().toTracking(), initColumn(startTime, period));
         this.isStreamTable = isStreamTable;
         final String name = isStreamTable ? "TimeTableStream" : "TimeTable";
@@ -130,7 +130,7 @@ public final class TimeTable extends QueryTable implements Runnable {
         registrar.addSource(this);
     }
 
-    private static Map<String, ColumnSource<?>> initColumn(DateTime firstTime, long period) {
+    private static Map<String, ColumnSource<?>> initColumn(Instant firstTime, long period) {
         if (period <= 0) {
             throw new IllegalArgumentException("Invalid time period: " + period + " nanoseconds");
         }
@@ -145,12 +145,12 @@ public final class TimeTable extends QueryTable implements Runnable {
     private void refresh(final boolean notifyListeners) {
         entry.onUpdateStart();
         try {
-            final DateTime dateTime = DateTime.of(clock);
+            final Instant dateTime = DateTimeUtils.now(clock);
             long rangeStart = lastIndex + 1;
             if (columnSource.startTime == null) {
                 lastIndex = 0;
-                columnSource.startTime = new DateTime(
-                        Numeric.lowerBin(dateTime.getNanos(), columnSource.period));
+                columnSource.startTime = DateTimeUtils.epochNanosToInstant(
+                        Numeric.lowerBin(DateTimeUtils.epochNanos(dateTime), columnSource.period));
             } else if (dateTime.compareTo(columnSource.startTime) >= 0) {
                 lastIndex = Math.max(lastIndex,
                         DateTimeUtils.minus(dateTime, columnSource.startTime) / columnSource.period);
@@ -186,25 +186,25 @@ public final class TimeTable extends QueryTable implements Runnable {
         UpdateGraphProcessor.DEFAULT.removeSource(this);
     }
 
-    private static final class SyntheticDateTimeSource extends AbstractColumnSource<DateTime> implements
-            ImmutableColumnSourceGetDefaults.LongBacked<DateTime>,
+    private static final class SyntheticDateTimeSource extends AbstractColumnSource<Instant> implements
+            ImmutableColumnSourceGetDefaults.LongBacked<Instant>,
             FillUnordered<Values> {
 
-        private DateTime startTime;
+        private Instant startTime;
         private final long period;
 
-        private SyntheticDateTimeSource(DateTime startTime, long period) {
-            super(DateTime.class);
+        private SyntheticDateTimeSource(Instant startTime, long period) {
+            super(Instant.class);
             this.startTime = startTime;
             this.period = period;
         }
 
-        private DateTime computeDateTime(long rowKey) {
+        private Instant computeDateTime(long rowKey) {
             return DateTimeUtils.plus(startTime, period * rowKey);
         }
 
         @Override
-        public DateTime get(long rowKey) {
+        public Instant get(long rowKey) {
             if (rowKey < 0) {
                 return null;
             }
@@ -212,7 +212,7 @@ public final class TimeTable extends QueryTable implements Runnable {
         }
 
         private long computeNanos(long rowKey) {
-            return startTime.getNanos() + period * rowKey;
+            return DateTimeUtils.epochNanos(startTime) + period * rowKey;
         }
 
         @Override
@@ -234,12 +234,12 @@ public final class TimeTable extends QueryTable implements Runnable {
             final RowSetBuilderRandom matchingSet = RowSetFactory.builderRandom();
 
             for (Object o : keys) {
-                if (!(o instanceof DateTime)) {
+                if (!(o instanceof Instant)) {
                     continue;
                 }
-                final DateTime key = (DateTime) o;
+                final Instant key = (Instant) o;
 
-                if (key.getNanos() % period != startTime.getNanos() % period
+                if (DateTimeUtils.epochNanos(key) % period != DateTimeUtils.epochNanos(startTime) % period
                         || DateTimeUtils.isBefore(key, startTime)) {
                     continue;
                 }
@@ -259,8 +259,8 @@ public final class TimeTable extends QueryTable implements Runnable {
         }
 
         @Override
-        public Map<DateTime, RowSet> getValuesMapping(RowSet subRange) {
-            final Map<DateTime, RowSet> result = new LinkedHashMap<>();
+        public Map<Instant, RowSet> getValuesMapping(RowSet subRange) {
+            final Map<Instant, RowSet> result = new LinkedHashMap<>();
             subRange.forAllRowKeys(
                     ii -> result.put(computeDateTime(ii), RowSetFactory.fromKeys(ii)));
             return result;
@@ -284,7 +284,7 @@ public final class TimeTable extends QueryTable implements Runnable {
                 @NotNull final FillContext context,
                 @NotNull final WritableChunk<? super Values> dest,
                 @NotNull final RowSequence rowSequence) {
-            final WritableObjectChunk<DateTime, ? super Values> objectDest = dest.asWritableObjectChunk();
+            final WritableObjectChunk<Instant, ? super Values> objectDest = dest.asWritableObjectChunk();
             dest.setSize(0);
             rowSequence.forAllRowKeys(rowKey -> objectDest.add(computeDateTime(rowKey)));
         }
@@ -302,7 +302,7 @@ public final class TimeTable extends QueryTable implements Runnable {
                 @NotNull final FillContext context,
                 @NotNull final WritableChunk<? super Values> dest,
                 @NotNull final LongChunk<? extends RowKeys> keys) {
-            final WritableObjectChunk<DateTime, ? super Values> objectDest = dest.asWritableObjectChunk();
+            final WritableObjectChunk<Instant, ? super Values> objectDest = dest.asWritableObjectChunk();
             objectDest.setSize(keys.size());
 
             for (int ii = 0; ii < keys.size(); ++ii) {
@@ -386,11 +386,11 @@ public final class TimeTable extends QueryTable implements Runnable {
                     }
                     final long key = (Long) o;
 
-                    if (key % period != startTime.getNanos() % period || key < startTime.getNanos()) {
+                    if (key % period != DateTimeUtils.epochNanos(startTime) % period || key < DateTimeUtils.epochNanos(startTime)) {
                         continue;
                     }
 
-                    matchingSet.addKey((key - startTime.getNanos()) / period);
+                    matchingSet.addKey((key - DateTimeUtils.epochNanos(startTime)) / period);
                 }
 
                 if (invertMatch) {
@@ -415,7 +415,7 @@ public final class TimeTable extends QueryTable implements Runnable {
             @Override
             public <ALTERNATE_DATA_TYPE> boolean allowsReinterpret(
                     @NotNull final Class<ALTERNATE_DATA_TYPE> alternateDataType) {
-                return alternateDataType == DateTime.class;
+                return alternateDataType == Instant.class;
             }
 
             @Override

@@ -5,13 +5,14 @@ package io.deephaven.plot.util.tables;
 
 import io.deephaven.base.testing.BaseArrayTestCase;
 import io.deephaven.plot.errors.PlotIllegalArgumentException;
-import io.deephaven.time.DateTime;
 import io.deephaven.gui.color.Color;
 import io.deephaven.gui.color.Paint;
 import io.deephaven.engine.table.Table;
 import io.deephaven.engine.util.TableTools;
+import io.deephaven.time.DateTimeUtils;
 import junit.framework.TestCase;
 
+import java.time.Instant;
 import java.util.Date;
 
 import static io.deephaven.util.QueryConstants.*;
@@ -30,7 +31,7 @@ public class TestColumnHandlerFactory extends BaseArrayTestCase {
     private final Double[] Doubles = {null, 2d, 3d};
     private final Number[] Numbers = {null, 2, 3};
     private final Date[] Dates = {null, new Date(1), new Date(2)};
-    private final DateTime[] DateTimes = {null, new DateTime(1), new DateTime(2)};
+    private final Instant[] DateTimes = {null, DateTimeUtils.epochNanosToInstant(1), DateTimeUtils.epochNanosToInstant(2)};
     private final Paint[] paints = {null, new Color(100, 0, 0), new Color(0, 100, 0)};
     private final String[] strings = {"A", "B", "C"};
     private final Table table = TableTools.newTable(
@@ -114,7 +115,7 @@ public class TestColumnHandlerFactory extends BaseArrayTestCase {
         columnHandlerTest(ColumnHandlerFactory.TypeClassification.TIME, "Dates", Date.class, handler);
 
         handler = ColumnHandlerFactory.newNumericHandler(tableHandle, "DateTimes", null);
-        columnHandlerTest(ColumnHandlerFactory.TypeClassification.TIME, "DateTimes", DateTime.class, handler);
+        columnHandlerTest(ColumnHandlerFactory.TypeClassification.TIME, "DateTimes", Instant.class, handler);
 
         handler.getTableHandle();
         handler = ColumnHandlerFactory.newNumericHandler(tableHandle, "Paints", null);
@@ -194,7 +195,7 @@ public class TestColumnHandlerFactory extends BaseArrayTestCase {
         columnHandlerTest(ColumnHandlerFactory.TypeClassification.TIME, "Dates", Date.class, handler);
 
         handler = ColumnHandlerFactory.newNumericHandler(table, "DateTimes", null);
-        columnHandlerTest(ColumnHandlerFactory.TypeClassification.TIME, "DateTimes", DateTime.class, handler);
+        columnHandlerTest(ColumnHandlerFactory.TypeClassification.TIME, "DateTimes", Instant.class, handler);
 
         try {
             handler.getTableHandle();
@@ -392,9 +393,9 @@ public class TestColumnHandlerFactory extends BaseArrayTestCase {
             if (clazz.equals(Date.class)) {
                 assertEquals(Dates[i].getTime(), ((Date) handler.get(i)).getTime());
                 assertEquals((double) Dates[i].getTime() * 1000000, handler.getDouble(i));
-            } else if (clazz.equals(DateTime.class)) {
+            } else if (clazz.equals(Instant.class)) {
                 assertEquals(DateTimes[i], handler.get(i));
-                assertEquals((double) DateTimes[i].getNanos(), handler.getDouble(i));
+                assertEquals((double) DateTimeUtils.epochNanos(DateTimes[i]), handler.getDouble(i));
             } else {
                 assertEquals(doubles[i], handler.getDouble(i));
                 if (Number.class.isAssignableFrom(handler.get(i).getClass())) {

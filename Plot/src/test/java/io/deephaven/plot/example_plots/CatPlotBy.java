@@ -20,7 +20,7 @@ public class CatPlotBy {
                 TableTools.col("Cats", cats),
                 TableTools.doubleCol("Values", values));
 
-        t = t.update("Timestamp = DateTime.now() + (HOUR * i)");
+        t = t.update("Timestamp = nowSystem() + (HOUR * i)");
         Figure fig = FigureFactory.figure();
         for (int i = 0; i < 1; i++) {
             fig = fig.newChart()

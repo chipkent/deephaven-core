@@ -10,7 +10,6 @@ import io.deephaven.engine.testutil.generator.IntGenerator;
 import io.deephaven.engine.testutil.generator.SetGenerator;
 import io.deephaven.engine.testutil.generator.SortedIntGenerator;
 import io.deephaven.engine.testutil.generator.UnsortedDateTimeGenerator;
-import io.deephaven.time.DateTime;
 import io.deephaven.time.DateTimeFormatter;
 import io.deephaven.time.DateTimeUtils;
 import io.deephaven.vector.IntVector;
@@ -25,6 +24,7 @@ import io.deephaven.util.QueryConstants;
 import io.deephaven.engine.util.TableTools;
 
 import java.text.ParseException;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Random;
@@ -240,10 +240,8 @@ public class QueryTableJoinTest {
         final Random random = new Random(seed);
         QueryScope.addParam("f", new DateTimeFormatter("dd HH:mm:ss"));
 
-        final DateTime start = DateTimeUtils.toDateTime(
-                DateTimeUtils.parseDate("2011-02-02").atStartOfDay().atZone(ZoneId.of("America/New_York")));
-        final DateTime end = DateTimeUtils.toDateTime(
-                DateTimeUtils.parseDate("2011-02-03").atStartOfDay().atZone(ZoneId.of("America/New_York")));
+        final Instant start = DateTimeUtils.parseDate("2011-02-02").atStartOfDay().atZone(ZoneId.of("America/New_York")).toInstant();
+        final Instant end = DateTimeUtils.parseDate("2011-02-03").atStartOfDay().atZone(ZoneId.of("America/New_York")).toInstant();
         final ColumnInfo<?, ?>[] leftColumnInfo;
         final QueryTable leftTable = getTable(leftSize, random,
                 leftColumnInfo = initColumnInfos(new String[] {"Date", "C1", "C2"},

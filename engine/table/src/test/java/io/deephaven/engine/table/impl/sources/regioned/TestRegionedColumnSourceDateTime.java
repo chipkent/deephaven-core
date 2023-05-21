@@ -4,17 +4,17 @@
 package io.deephaven.engine.table.impl.sources.regioned;
 
 import io.deephaven.chunk.attributes.Values;
-import io.deephaven.time.DateTime;
 import io.deephaven.time.DateTimeUtils;
 import io.deephaven.util.QueryConstants;
 import io.deephaven.engine.table.ColumnSource;
 import org.junit.Test;
 
+import java.time.Instant;
 import java.time.ZoneId;
 
 @SuppressWarnings("JUnit4AnnotatedMethodInJUnit3TestCase")
 public class TestRegionedColumnSourceDateTime
-        extends TstRegionedColumnSourceReferencing<DateTime, Values, ColumnRegionLong<Values>> {
+        extends TstRegionedColumnSourceReferencing<Instant, Values, ColumnRegionLong<Values>> {
 
     private static final ZoneId TZ_NY = ZoneId.of("America/New_York");
 
@@ -22,34 +22,34 @@ public class TestRegionedColumnSourceDateTime
         super(ColumnRegionLong.class);
     }
 
-    private static final DateTime[] TEST_DATES = new DateTime[] {
+    private static final Instant[] TEST_DATES = new Instant[] {
             null,
             DateTimeUtils.now(),
             DateTimeUtils.dateTimeAtMidnight(DateTimeUtils.now(), TZ_NY),
-            DateTimeUtils.parseDateTime("2013-01-15T12:19:32.000 NY"),
-            DateTimeUtils.parseDateTime("2013-01-15T09:30:00.000 NY"),
-            DateTimeUtils.parseDateTime("2013-01-15T16:00:00.000 NY"),
-            DateTimeUtils.parseDateTime("2013-01-15T16:15:00.000 NY"),
-            DateTimeUtils.parseDateTime("2000-01-01T00:00:00.000 NY"),
-            DateTimeUtils.parseDateTime("1999-12-31T23:59:59.000 NY"),
-            DateTimeUtils.parseDateTime("1981-02-22T19:50:00.000 NY")
+            DateTimeUtils.parseInstant("2013-01-15T12:19:32.000 NY"),
+            DateTimeUtils.parseInstant("2013-01-15T09:30:00.000 NY"),
+            DateTimeUtils.parseInstant("2013-01-15T16:00:00.000 NY"),
+            DateTimeUtils.parseInstant("2013-01-15T16:15:00.000 NY"),
+            DateTimeUtils.parseInstant("2000-01-01T00:00:00.000 NY"),
+            DateTimeUtils.parseInstant("1999-12-31T23:59:59.000 NY"),
+            DateTimeUtils.parseInstant("1981-02-22T19:50:00.000 NY")
     };
 
     private ColumnSource<Long> SUT_AS_LONG;
 
     private void assertLookup(final long elementIndex,
             final int expectedRegionIndex,
-            final DateTime output,
+            final Instant output,
             final boolean prev,
             final boolean reinterpreted) {
         checking(new Expectations() {
             {
                 oneOf(cr[expectedRegionIndex]).getLong(elementIndex);
-                will(returnValue(output == null ? QueryConstants.NULL_LONG : output.getNanos()));
+                will(returnValue(output == null ? QueryConstants.NULL_LONG : DateTimeUtils.epochNanos(output)));
             }
         });
         if (reinterpreted) {
-            assertEquals(output == null ? QueryConstants.NULL_LONG : output.getNanos(),
+            assertEquals(output == null ? QueryConstants.NULL_LONG : DateTimeUtils.epochNanos(output),
                     prev ? SUT_AS_LONG.getPrevLong(elementIndex) : SUT_AS_LONG.getLong(elementIndex));
         } else {
             assertEquals(output, prev ? SUT.getPrev(elementIndex) : SUT.get(elementIndex));
@@ -62,10 +62,10 @@ public class TestRegionedColumnSourceDateTime
         super.setUp();
 
         SUT = new RegionedColumnSourceDateTime();
-        assertEquals(DateTime.class, SUT.getType());
+        assertEquals(Instant.class, SUT.getType());
         SUT_AS_LONG = SUT.reinterpret(long.class);
         assertEquals(long.class, SUT_AS_LONG.getType());
-        assertEquals(RegionedColumnSourceDateTime.class, SUT_AS_LONG.reinterpret(DateTime.class).getClass());
+        assertEquals(RegionedColumnSourceDateTime.class, SUT_AS_LONG.reinterpret(Instant.class).getClass());
     }
 
     @Override

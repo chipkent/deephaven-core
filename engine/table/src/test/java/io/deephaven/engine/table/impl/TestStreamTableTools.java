@@ -9,12 +9,13 @@ import io.deephaven.engine.table.Table;
 import io.deephaven.engine.testutil.TstUtils;
 import io.deephaven.time.DateTimeUtils;
 import io.deephaven.engine.updategraph.UpdateGraphProcessor;
-import io.deephaven.time.DateTime;
 import io.deephaven.engine.util.TableTools;
 import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.time.Instant;
 
 import static io.deephaven.engine.util.TableTools.*;
 import static io.deephaven.engine.testutil.TstUtils.assertTableEquals;
@@ -34,9 +35,9 @@ public class TestStreamTableTools {
 
     @Test
     public void testStreamToAppendOnlyTable() {
-        final DateTime dt1 = DateTimeUtils.parseDateTime("2021-08-11T8:20:00 NY");
-        final DateTime dt2 = DateTimeUtils.parseDateTime("2021-08-11T8:21:00 NY");
-        final DateTime dt3 = DateTimeUtils.parseDateTime("2021-08-11T11:22:00 NY");
+        final Instant dt1 = DateTimeUtils.parseInstant("2021-08-11T8:20:00 NY");
+        final Instant dt2 = DateTimeUtils.parseInstant("2021-08-11T8:21:00 NY");
+        final Instant dt3 = DateTimeUtils.parseInstant("2021-08-11T11:22:00 NY");
 
         final QueryTable streamTable = TstUtils.testRefreshingTable(i(1).toTracking(), intCol("I", 7),
                 doubleCol("D", Double.NEGATIVE_INFINITY), dateTimeCol("DT", dt1), col("B", Boolean.TRUE));

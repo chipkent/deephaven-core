@@ -6,16 +6,16 @@ package io.deephaven.engine.table.impl.by.ssmcountdistinct;
 import io.deephaven.vector.LongVector;
 import io.deephaven.vector.ObjectVector;
 import io.deephaven.vector.ObjectVectorDirect;
-import io.deephaven.time.DateTime;
 import io.deephaven.engine.table.impl.AbstractColumnSource;
 import io.deephaven.engine.table.impl.ColumnSourceGetDefaults;
 import io.deephaven.engine.table.impl.MutableColumnSourceGetDefaults;
 import io.deephaven.engine.table.impl.ssms.LongSegmentedSortedMultiset;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Instant;
 import java.util.Objects;
 
-import static io.deephaven.time.DateTimeUtils.epochNanosToDateTime;
+import static io.deephaven.time.DateTimeUtils.epochNanosToInstant;
 
 /**
  * A {@link SsmBackedColumnSource} for Longs.
@@ -27,7 +27,7 @@ public class DateTimeSsmSourceWrapper extends AbstractColumnSource<ObjectVector>
     private final LongSsmBackedSource underlying;
 
     public DateTimeSsmSourceWrapper(@NotNull final LongSsmBackedSource underlying) {
-        super(ObjectVector.class, DateTime.class);
+        super(ObjectVector.class, Instant.class);
         this.underlying = underlying;
     }
 
@@ -37,12 +37,12 @@ public class DateTimeSsmSourceWrapper extends AbstractColumnSource<ObjectVector>
     }
 
     @Override
-    public ObjectVector<DateTime> get(long rowKey) {
+    public ObjectVector<Instant> get(long rowKey) {
         return new ValueWrapper(underlying.getCurrentSsm(rowKey));
     }
 
     @Override
-    public ObjectVector<DateTime> getPrev(long rowKey) {
+    public ObjectVector<Instant> getPrev(long rowKey) {
         final LongVector maybePrev = underlying.getPrev(rowKey);
         if (maybePrev == null) {
             return null;
@@ -60,7 +60,7 @@ public class DateTimeSsmSourceWrapper extends AbstractColumnSource<ObjectVector>
         underlying.startTrackingPrevValues();
     }
 
-    public static class ValueWrapper implements ObjectVector<DateTime> {
+    public static class ValueWrapper implements ObjectVector<Instant> {
         final LongSegmentedSortedMultiset underlying;
 
         public ValueWrapper(LongSegmentedSortedMultiset underlying) {
@@ -68,33 +68,33 @@ public class DateTimeSsmSourceWrapper extends AbstractColumnSource<ObjectVector>
         }
 
         @Override
-        public DateTime get(long index) {
-            return epochNanosToDateTime(underlying.get(index));
+        public Instant get(long index) {
+            return epochNanosToInstant(underlying.get(index));
         }
 
         @Override
-        public ObjectVector<DateTime> subVector(long fromIndexInclusive, long toIndexExclusive) {
+        public ObjectVector<Instant> subVector(long fromIndexInclusive, long toIndexExclusive) {
             return underlying.subArrayAsDate(fromIndexInclusive, toIndexExclusive);
         }
 
         @Override
-        public ObjectVector<DateTime> subVectorByPositions(long[] positions) {
+        public ObjectVector<Instant> subVectorByPositions(long[] positions) {
             return underlying.subArrayByPositionsAsDates(positions);
         }
 
         @Override
-        public DateTime[] toArray() {
+        public Instant[] toArray() {
             return underlying.toDateArray();
         }
 
         @Override
-        public DateTime[] copyToArray() {
+        public Instant[] copyToArray() {
             return toArray();
         }
 
         @Override
-        public Class<DateTime> getComponentType() {
-            return DateTime.class;
+        public Class<Instant> getComponentType() {
+            return Instant.class;
         }
 
         @Override
@@ -103,7 +103,7 @@ public class DateTimeSsmSourceWrapper extends AbstractColumnSource<ObjectVector>
         }
 
         @Override
-        public ObjectVector<DateTime> getDirect() {
+        public ObjectVector<Instant> getDirect() {
             return underlying.getDirectAsDate();
         }
 
@@ -122,10 +122,10 @@ public class DateTimeSsmSourceWrapper extends AbstractColumnSource<ObjectVector>
             return underlying.intSize(operation);
         }
 
-        public static ObjectVector<DateTime> getPrevValues(LongVector previousLongs) {
-            final DateTime[] asDates = new DateTime[previousLongs.intSize()];
+        public static ObjectVector<Instant> getPrevValues(LongVector previousLongs) {
+            final Instant[] asDates = new Instant[previousLongs.intSize()];
             for (int ii = 0; ii < asDates.length; ii++) {
-                asDates[ii] = epochNanosToDateTime(previousLongs.get(ii));
+                asDates[ii] = epochNanosToInstant(previousLongs.get(ii));
             }
 
             return new ObjectVectorDirect<>(asDates);

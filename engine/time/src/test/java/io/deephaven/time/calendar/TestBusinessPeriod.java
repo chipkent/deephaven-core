@@ -8,11 +8,13 @@ import io.deephaven.time.DateTime;
 import io.deephaven.time.DateTimeUtils;
 import junit.framework.TestCase;
 
+import java.time.Instant;
+
 public class TestBusinessPeriod extends BaseArrayTestCase {
 
     public void testBusinessPeriod() {
-        final DateTime open1 = DateTimeUtils.parseDateTime("2017-03-11T10:00:00.000000000 NY");
-        final DateTime close1 = DateTimeUtils.parseDateTime("2017-03-11T11:00:00.000000000 NY");
+        final Instant open1 = DateTimeUtils.parseInstant("2017-03-11T10:00:00.000000000 NY");
+        final Instant close1 = DateTimeUtils.parseInstant("2017-03-11T11:00:00.000000000 NY");
 
         try {
             new BusinessPeriod(null, close1);
