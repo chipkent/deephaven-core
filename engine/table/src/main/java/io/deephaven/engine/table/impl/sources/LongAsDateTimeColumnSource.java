@@ -4,19 +4,20 @@
 package io.deephaven.engine.table.impl.sources;
 
 import io.deephaven.engine.table.ColumnSource;
-import io.deephaven.time.DateTime;
 import io.deephaven.time.DateTimeUtils;
 
+import java.time.Instant;
+
 /**
- * Reinterpret result {@link ColumnSource} implementations that translates {@code long} to {@link DateTime} values.
+ * Reinterpret result {@link ColumnSource} implementations that translates {@code long} to {@link Instant} values.
  */
-public class LongAsDateTimeColumnSource extends BoxedLongAsTimeSource<DateTime> {
+public class LongAsDateTimeColumnSource extends BoxedLongAsTimeSource<Instant> {
     public LongAsDateTimeColumnSource(ColumnSource<Long> alternateColumnSource) {
-        super(DateTime.class, alternateColumnSource);
+        super(Instant.class, alternateColumnSource);
     }
 
     @Override
-    protected DateTime makeValue(long val) {
-        return DateTimeUtils.epochNanosToDateTime(val);
+    protected Instant makeValue(long val) {
+        return DateTimeUtils.epochNanosToInstant(val);
     }
 }

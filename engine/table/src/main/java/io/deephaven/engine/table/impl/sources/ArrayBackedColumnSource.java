@@ -7,7 +7,6 @@ import io.deephaven.engine.table.impl.DefaultGetContext;
 import io.deephaven.engine.table.WritableColumnSource;
 import io.deephaven.engine.rowset.chunkattributes.RowKeys;
 import io.deephaven.util.type.ArrayTypeUtils;
-import io.deephaven.time.DateTime;
 import io.deephaven.chunk.*;
 import io.deephaven.chunk.attributes.Values;
 import io.deephaven.engine.rowset.RowSequence;
@@ -322,8 +321,8 @@ public abstract class ArrayBackedColumnSource<T>
      *        the epoch
      * @return an in-memory column source with the requested data
      */
-    public static WritableColumnSource<DateTime> getDateTimeMemoryColumnSource(LongChunk<Values> data) {
-        final WritableColumnSource<DateTime> result = new DateTimeArraySource();
+    public static WritableColumnSource<Instant> getDateTimeMemoryColumnSource(LongChunk<Values> data) {
+        final WritableColumnSource<Instant> result = new DateTimeArraySource();
         result.ensureCapacity(data.size());
         for (int ii = 0; ii < data.size(); ++ii) {
             result.set(ii, data.get(ii));
@@ -338,8 +337,8 @@ public abstract class ArrayBackedColumnSource<T>
      *        the epoch
      * @return an in-memory column source with the requested data
      */
-    public static WritableColumnSource<DateTime> getDateTimeMemoryColumnSource(@NotNull final long[] data) {
-        final WritableColumnSource<DateTime> result = new DateTimeArraySource();
+    public static WritableColumnSource<Instant> getDateTimeMemoryColumnSource(@NotNull final long[] data) {
+        final WritableColumnSource<Instant> result = new DateTimeArraySource();
         result.ensureCapacity(data.length);
         final WritableColumnSource<Long> asLong = (WritableColumnSource<Long>) result.reinterpret(long.class);
         try (final FillFromContext context = asLong.makeFillFromContext(data.length);
@@ -411,8 +410,6 @@ public abstract class ArrayBackedColumnSource<T>
             result = new ShortArraySource();
         } else if (dataType == boolean.class || dataType == Boolean.class) {
             result = new BooleanArraySource();
-        } else if (dataType == DateTime.class) {
-            result = new DateTimeArraySource();
         } else if (dataType == Instant.class) {
             result = new InstantArraySource();
         } else {

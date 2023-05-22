@@ -8,7 +8,6 @@ import io.deephaven.engine.rowset.WritableRowSet;
 import io.deephaven.engine.rowset.RowSet;
 import io.deephaven.engine.rowset.RowSetFactory;
 import io.deephaven.engine.table.*;
-import io.deephaven.time.DateTime;
 import io.deephaven.engine.table.impl.QueryTable;
 import io.deephaven.engine.table.impl.sources.ArrayBackedColumnSource;
 import io.deephaven.engine.table.impl.sources.WritableRedirectedColumnSource;
@@ -69,7 +68,7 @@ public class InitialSnapshotTable extends QueryTable {
             return (Setter<float[]>) (array, arrayIndex, destIndex) -> source.set(destIndex, array[arrayIndex]);
         } else if (source.getType() == int.class) {
             return (Setter<int[]>) (array, arrayIndex, destIndex) -> source.set(destIndex, array[arrayIndex]);
-        } else if (source.getType() == long.class || source.getType() == DateTime.class
+        } else if (source.getType() == long.class || source.getType() == Instant.class
                 || source.getType() == Instant.class || source.getType() == ZonedDateTime.class) {
             return (Setter<long[]>) (array, arrayIndex, destIndex) -> source.set(destIndex, array[arrayIndex]);
         } else if (source.getType() == short.class) {

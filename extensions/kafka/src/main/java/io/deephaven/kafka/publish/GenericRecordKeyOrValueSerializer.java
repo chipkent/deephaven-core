@@ -9,7 +9,6 @@ import io.deephaven.engine.table.ChunkSource;
 import io.deephaven.engine.table.Table;
 import io.deephaven.engine.util.BigDecimalUtils;
 import io.deephaven.kafka.KafkaSchemaUtils;
-import io.deephaven.time.DateTime;
 import io.deephaven.engine.util.string.StringUtils;
 import io.deephaven.engine.table.ColumnSource;
 import io.deephaven.chunk.*;
@@ -28,6 +27,7 @@ import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -294,7 +294,7 @@ public class GenericRecordKeyOrValueSerializer implements KeyOrValueSerializer<G
         return makeGenericFieldProcessor(
                 fieldName,
                 chunkSource,
-                (final int ii, final ObjectChunk<?, Values> inputChunk) -> ((DateTime) inputChunk.get(ii)).getMillis());
+                (final int ii, final ObjectChunk<?, Values> inputChunk) -> ((Instant) inputChunk.get(ii)).getMillis());
     }
 
     private static GenericRecordFieldProcessor makeDateTimeToMicrosFieldProcessor(
@@ -303,7 +303,7 @@ public class GenericRecordKeyOrValueSerializer implements KeyOrValueSerializer<G
         return makeGenericFieldProcessor(
                 fieldName,
                 chunkSource,
-                (final int ii, final ObjectChunk<?, Values> inputChunk) -> ((DateTime) inputChunk.get(ii)).getMicros());
+                (final int ii, final ObjectChunk<?, Values> inputChunk) -> ((Instant) inputChunk.get(ii)).getMicros());
     }
 
     private static BigInteger toBigIntegerAtPrecisionAndScale(
@@ -380,7 +380,7 @@ public class GenericRecordKeyOrValueSerializer implements KeyOrValueSerializer<G
             final Class<?> columnType,
             final ColumnSource<?> src) {
         final Schema fieldSchema = field.schema();
-        if (columnType == DateTime.class && fieldSchema.getType() == Schema.Type.LONG) {
+        if (columnType == Instant.class && fieldSchema.getType() == Schema.Type.LONG) {
             final LogicalType logicalType = fieldSchema.getLogicalType();
             if (LogicalTypes.timestampMicros().equals(logicalType)) {
                 return makeLongFieldProcessorWithInverseFactor(fieldName, src, 1000);
@@ -447,7 +447,7 @@ public class GenericRecordKeyOrValueSerializer implements KeyOrValueSerializer<G
         if (type == double.class) {
             return makeDoubleFieldProcessor(fieldName, src);
         }
-        if (type == DateTime.class) {
+        if (type == Instant.class) {
             final String logicalType = getLogicalType(fieldName, field);
             if (logicalType == null) {
                 throw new IllegalArgumentException(

@@ -13,12 +13,12 @@ import io.deephaven.engine.table.impl.preview.DisplayWrapper;
 import io.deephaven.engine.context.QueryScope;
 import io.deephaven.time.DateTimeUtils;
 import io.deephaven.util.type.ArrayTypeUtils;
-import io.deephaven.time.DateTime;
 import io.deephaven.engine.table.ColumnSource;
 import io.deephaven.engine.rowset.RowSet;
 import org.jetbrains.annotations.NotNull;
 import org.jpy.PyObject;
 
+import java.time.Instant;
 import java.util.*;
 
 public class MatchFilter extends WhereFilterImpl {
@@ -321,7 +321,7 @@ public class MatchFilter extends WhereFilterImpl {
                     }
                 };
             }
-            if (cls == DateTime.class) {
+            if (cls == Instant.class) {
                 return new ColumnTypeConvertor() {
                     @Override
                     Object convertStringLiteral(String str) {

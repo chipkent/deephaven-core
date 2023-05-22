@@ -8,7 +8,6 @@ import io.deephaven.base.verify.Assert;
 import io.deephaven.base.verify.Require;
 import io.deephaven.base.testing.BaseArrayTestCase;
 import io.deephaven.engine.table.Table;
-import io.deephaven.time.DateTime;
 import io.deephaven.vector.*;
 import io.deephaven.engine.table.impl.lang.QueryLanguageParser.QueryLanguageParseException;
 import io.deephaven.vector.Vector;
@@ -23,6 +22,7 @@ import org.jpy.PyObject;
 import org.junit.Before;
 
 import java.awt.*;
+import java.time.Instant;
 import java.util.*;
 import java.util.List;
 
@@ -106,7 +106,7 @@ public class TestQueryLanguageParser extends BaseArrayTestCase {
         variables.put("myDummyClass", LanguageParserDummyClass.class);
         variables.put("myDummyInnerClass", LanguageParserDummyClass.InnerClass.class);
         variables.put("myClosure", Closure.class);
-        variables.put("myDateTime", DateTime.class);
+        variables.put("myDateTime", Instant.class);
 
         variables.put("myTable", Table.class);
         variables.put("myPyObject", PyObject.class);
@@ -1524,22 +1524,22 @@ public class TestQueryLanguageParser extends BaseArrayTestCase {
         // ensure we can find the original method
         String expression = "io.deephaven.time.DateTimeUtils.plus(myDateTime, myLong)";
         String resultExpression = "io.deephaven.time.DateTimeUtils.plus(myDateTime, myLong)";
-        check(expression, resultExpression, DateTime.class, new String[] {"myDateTime", "myLong"});
+        check(expression, resultExpression, Instant.class, new String[] {"myDateTime", "myLong"});
 
         // check long unbox
         expression = "io.deephaven.time.DateTimeUtils.plus(myDateTime, myLongObj)";
         resultExpression = "io.deephaven.time.DateTimeUtils.plus(myDateTime, myLongObj.longValue())";
-        check(expression, resultExpression, DateTime.class, new String[] {"myDateTime", "myLongObj"});
+        check(expression, resultExpression, Instant.class, new String[] {"myDateTime", "myLongObj"});
 
         // check int widen
         expression = "io.deephaven.time.DateTimeUtils.plus(myDateTime, myInt)";
         resultExpression = "io.deephaven.time.DateTimeUtils.plus(myDateTime, longCast(myInt))";
-        check(expression, resultExpression, DateTime.class, new String[] {"myDateTime", "myInt"});
+        check(expression, resultExpression, Instant.class, new String[] {"myDateTime", "myInt"});
 
         // check int unbox and widen
         expression = "io.deephaven.time.DateTimeUtils.plus(myDateTime, myIntObj)";
         resultExpression = "io.deephaven.time.DateTimeUtils.plus(myDateTime, myIntObj.longValue())";
-        check(expression, resultExpression, DateTime.class, new String[] {"myDateTime", "myIntObj"});
+        check(expression, resultExpression, Instant.class, new String[] {"myDateTime", "myIntObj"});
 
         // check vararg widen
         expression = "testImplicitConversion1(myFloat, myFloat)";
@@ -1766,7 +1766,7 @@ public class TestQueryLanguageParser extends BaseArrayTestCase {
 
         expression = "new io.deephaven.time.DateTime(123L)";
         resultExpression = "new io.deephaven.time.DateTime(123L)";
-        check(expression, resultExpression, DateTime.class, new String[] {});
+        check(expression, resultExpression, Instant.class, new String[] {});
     }
 
     public void testIntToLongConversion() throws Exception {

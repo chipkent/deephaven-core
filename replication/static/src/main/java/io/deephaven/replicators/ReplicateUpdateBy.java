@@ -411,7 +411,7 @@ public class ReplicateUpdateBy {
                                 "    @Override\n" +
                                 "    public Map<String, ColumnSource<?>> getOutputColumns() {\n" +
                                 "        final ColumnSource<?> actualOutput;\n" +
-                                "        if(type == DateTime.class) {\n" +
+                                "        if(type == Instant.class) {\n" +
                                 "            actualOutput = ReinterpretUtils.longToDateTimeSource(outputSource);\n" +
                                 "        } else {\n" +
                                 "            actualOutput = outputSource;\n" +

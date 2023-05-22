@@ -7,13 +7,13 @@ import io.deephaven.datastructures.util.CollectionUtil;
 import io.deephaven.engine.table.Table;
 import io.deephaven.engine.table.impl.perf.QueryPerformanceNugget;
 import io.deephaven.engine.table.impl.perf.QueryPerformanceRecorder;
-import io.deephaven.time.DateTime;
 import io.deephaven.engine.table.ColumnSource;
 import io.deephaven.engine.rowset.RowSet;
 import io.deephaven.util.type.ArrayTypeUtils;
 
 import java.io.PrintStream;
 import java.lang.annotation.Annotation;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -119,7 +119,7 @@ class TableShowTools {
             len = Math.max(len, 20);
         } else if (columnSource.getType() == double.class || columnSource.getType() == Double.class) {
             len = Math.max(len, 20);
-        } else if (columnSource.getType() == DateTime.class) {
+        } else if (columnSource.getType() == Instant.class) {
             len = Math.max(len, 33);
         } else if (columnSource.getType() == java.util.Date.class) {
             len = Math.max(len, 33);
@@ -145,7 +145,7 @@ class TableShowTools {
     }
 
     private static ColumnPrinter getColumnPrinter(ColumnSource column, int len, ZoneId timeZone) {
-        if (column.getType() == DateTime.class) {
+        if (column.getType() == Instant.class) {
             return new DateTimePrinter(len, timeZone);
         } else if (!column.getType().isArray()) {
             return new DefaultPrinter(len);
@@ -253,7 +253,7 @@ class TableShowTools {
 
         @Override
         public void print(PrintStream out, Object value) {
-            super.print(out, value == null ? null : ((DateTime) value).toString(timeZone));
+            super.print(out, value == null ? null : ((Instant) value).toString(timeZone));
         }
     }
 

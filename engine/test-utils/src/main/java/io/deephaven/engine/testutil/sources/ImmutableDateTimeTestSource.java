@@ -11,18 +11,20 @@ import io.deephaven.chunk.attributes.Values;
 import io.deephaven.engine.table.ColumnSource;
 import io.deephaven.engine.table.impl.AbstractColumnSource;
 import io.deephaven.engine.table.impl.MutableColumnSourceGetDefaults;
-import io.deephaven.time.DateTime;
 import io.deephaven.engine.rowset.RowSet;
+import io.deephaven.time.DateTimeUtils;
 import io.deephaven.util.QueryConstants;
 import io.deephaven.util.type.TypeUtils;
 import org.jetbrains.annotations.NotNull;
+
+import java.time.Instant;
 
 /**
  * DateTime column source that wraps and delegates the storage to an {@code ImmutableLongTestSource<Long>}. This also
  * provides an interface so this column can be interpreted as a long column (through UnboxedDateTimeTestSource).
  */
-public class ImmutableDateTimeTestSource extends AbstractColumnSource<DateTime>
-        implements MutableColumnSourceGetDefaults.ForObject<DateTime>, TestColumnSource<DateTime> {
+public class ImmutableDateTimeTestSource extends AbstractColumnSource<Instant>
+        implements MutableColumnSourceGetDefaults.ForObject<Instant>, TestColumnSource<Instant> {
 
     private final ImmutableLongTestSource longTestSource;
     private final UnboxedDateTimeTestSource alternateColumnSource;
@@ -31,7 +33,7 @@ public class ImmutableDateTimeTestSource extends AbstractColumnSource<DateTime>
      * Create a new ImmutableDateTimeTestSource with no initial data.
      */
     public ImmutableDateTimeTestSource() {
-        super(DateTime.class);
+        super(Instant.class);
         this.longTestSource = new ImmutableLongTestSource();
         this.alternateColumnSource = new UnboxedDateTimeTestSource(this, longTestSource);
     }
@@ -43,7 +45,7 @@ public class ImmutableDateTimeTestSource extends AbstractColumnSource<DateTime>
      * @param data The initial data
      */
     public ImmutableDateTimeTestSource(RowSet rowSet, Chunk<Values> data) {
-        super(DateTime.class);
+        super(Instant.class);
         if (data.getChunkType() == ChunkType.Long) {
             this.longTestSource = new ImmutableLongTestSource(rowSet, data.asLongChunk());
         } else {
@@ -60,9 +62,9 @@ public class ImmutableDateTimeTestSource extends AbstractColumnSource<DateTime>
                 result[ii] = TypeUtils.unbox(boxedLongChunk.get(ii));
             }
         } else {
-            final ObjectChunk<DateTime, Values> dtc = data.asObjectChunk();
+            final ObjectChunk<Instant, Values> dtc = data.asObjectChunk();
             for (int ii = 0; ii < result.length; ++ii) {
-                final DateTime dt = dtc.get(ii);
+                final Instant dt = dtc.get(ii);
                 result[ii] = dt == null ? QueryConstants.NULL_LONG : dt.getNanos();
             }
         }
@@ -90,9 +92,9 @@ public class ImmutableDateTimeTestSource extends AbstractColumnSource<DateTime>
     }
 
     @Override
-    public DateTime get(long index) {
+    public Instant get(long index) {
         final Long v = longTestSource.get(index);
-        return v == null ? null : new DateTime(v);
+        return v == null ? null : DateTimeUtils.epochNanosToInstant(v);
     }
 
     @Override
@@ -106,9 +108,9 @@ public class ImmutableDateTimeTestSource extends AbstractColumnSource<DateTime>
     }
 
     @Override
-    public DateTime getPrev(long index) {
+    public Instant getPrev(long index) {
         final Long v = longTestSource.getPrev(index);
-        return v == null ? null : new DateTime(v);
+        return v == null ? null : DateTimeUtils.epochNanosToInstant(v);
     }
 
     @Override

@@ -25,6 +25,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.time.Instant;
 import java.util.List;
 
 import static io.deephaven.engine.util.TableTools.*;
@@ -221,7 +222,7 @@ public class TestStreamToTableAdapter {
     public void testWrappedTypes() {
         final TableDefinition tableDefinition = TableDefinition.from(
                 List.of("S", "B", "D"),
-                List.of(String.class, Boolean.class, DateTime.class));
+                List.of(String.class, Boolean.class, Instant.class));
         final Table empty = TableTools.newTable(tableDefinition);
 
         final StreamPublisher streamPublisher = new DummyStreamPublisher();
@@ -251,12 +252,12 @@ public class TestStreamToTableAdapter {
         wic.set(2, BooleanUtils.booleanAsByte(null));
         final WritableLongChunk<Values> wlc = WritableLongChunk.makeWritableChunk(3);
         chunks[2] = wlc;
-        final DateTime dt1 = DateTimeUtils.parseDateTime("2021-04-28T12:00:00 NY");
-        wlc.set(0, dt1.getNanos());
-        final DateTime dt2 = DateTimeUtils.parseDateTime("2012-08-25T12:00:00 NY");
-        wlc.set(1, dt2.getNanos());
-        final DateTime dt3 = DateTimeUtils.parseDateTime("2030-01-20T12:00:00 NY");
-        wlc.set(2, dt3.getNanos());
+        final Instant dt1 = DateTimeUtils.parseInstant("2021-04-28T12:00:00 NY");
+        wlc.set(0, DateTimeUtils.epochNanos(dt1));
+        final Instant dt2 = DateTimeUtils.parseInstant("2012-08-25T12:00:00 NY");
+        wlc.set(1, DateTimeUtils.epochNanos(dt2));
+        final Instant dt3 = DateTimeUtils.parseInstant("2030-01-20T12:00:00 NY");
+        wlc.set(2, DateTimeUtils.epochNanos(dt3));
 
         adapter.accept(chunks);
 

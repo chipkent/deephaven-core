@@ -3,10 +3,7 @@
  */
 package io.deephaven.time;
 
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.Period;
+import java.time.*;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -93,7 +90,7 @@ public class TimeLiteralReplacedExpression {
                 instanceVariablesString.append("        private DateTime _dateTime").append(dateTimeIndex)
                         .append("=DateTimeUtils.parseInstant(\"")
                         .append(expression, matcher.start() + 1, matcher.end() - 1).append("\");\n");
-                newVariables.put("_dateTime" + dateTimeIndex, DateTime.class);
+                newVariables.put("_dateTime" + dateTimeIndex, Instant.class);
 
                 dateTimeIndex++;
             } else if (DateTimeUtils.parsePeriodQuiet(s) != null) {

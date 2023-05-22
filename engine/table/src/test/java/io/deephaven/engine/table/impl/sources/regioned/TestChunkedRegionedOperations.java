@@ -11,7 +11,6 @@ import io.deephaven.stringset.ArrayStringSet;
 import io.deephaven.stringset.StringSet;
 import io.deephaven.engine.context.QueryScope;
 import io.deephaven.engine.testutil.junit4.EngineCleanup;
-import io.deephaven.time.DateTime;
 import io.deephaven.time.DateTimeUtils;
 import io.deephaven.parquet.table.ParquetTools;
 import io.deephaven.engine.util.TableTools;
@@ -39,6 +38,7 @@ import java.io.*;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -270,7 +270,7 @@ public class TestChunkedRegionedOperations {
                 ParquetInstructions.EMPTY,
                 partitionedDataDefinition).updateView(
                         new ReinterpretedColumn<>("Bl", Boolean.class, "Bl_R", byte.class),
-                        new ReinterpretedColumn<>("DT", DateTime.class, "DT_R", long.class))
+                        new ReinterpretedColumn<>("DT", Instant.class, "DT_R", long.class))
                 .coalesce();
     }
 

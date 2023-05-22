@@ -67,7 +67,7 @@ public class ReplicateOperators {
     }
 
     private static final String resultInitReplacementForLong = "" +
-            "        if (type == DateTime.class) {\n" +
+            "        if (type == Instant.class) {\n" +
             "            actualResult = new DateTimeArraySource();\n" +
             "            resultColumn = ((NanosBasedTimeArraySource<?>)actualResult).toEpochNano();\n" +
             "        } else if (type == Instant.class) {\n" +

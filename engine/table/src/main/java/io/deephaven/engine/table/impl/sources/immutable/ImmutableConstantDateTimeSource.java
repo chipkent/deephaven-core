@@ -9,6 +9,8 @@ import io.deephaven.time.DateTime;
 import io.deephaven.time.DateTimeUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Instant;
+
 /**
  * Constant ImmutableColumnSource for {@link DateTime}s. Allows reinterpretation as long.
  */
@@ -16,25 +18,25 @@ public class ImmutableConstantDateTimeSource extends ImmutableConstantNanosBased
         implements ImmutableColumnSourceGetDefaults.ForLongAsDateTime {
 
     public ImmutableConstantDateTimeSource(final long nanos) {
-        super(DateTime.class, new ImmutableConstantLongSource(nanos));
+        super(Instant.class, new ImmutableConstantLongSource(nanos));
     }
 
     public ImmutableConstantDateTimeSource(final @NotNull ImmutableConstantLongSource nanoSource) {
-        super(DateTime.class, nanoSource);
+        super(Instant.class, nanoSource);
     }
 
     @Override
-    protected DateTime makeValue(long nanos) {
-        return DateTimeUtils.epochNanosToDateTime(nanos);
+    protected Instant makeValue(long nanos) {
+        return DateTimeUtils.epochNanosToInstant(nanos);
     }
 
     @Override
-    protected long toNanos(DateTime value) {
+    protected long toNanos(Instant value) {
         return DateTimeUtils.epochNanos(value);
     }
 
     @Override
-    public ColumnSource<DateTime> toDateTime() {
+    public ColumnSource<Instant> toDateTime() {
         return this;
     }
 }

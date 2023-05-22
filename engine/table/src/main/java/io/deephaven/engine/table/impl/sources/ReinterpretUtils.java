@@ -22,7 +22,7 @@ public class ReinterpretUtils {
      *
      * @return the long source
      */
-    public static ColumnSource<Long> dateTimeToLongSource(ColumnSource<DateTime> source) {
+    public static ColumnSource<Long> dateTimeToLongSource(ColumnSource<Instant> source) {
         if (source.allowsReinterpret(long.class)) {
             return source.reinterpret(long.class);
         } else {
@@ -37,9 +37,9 @@ public class ReinterpretUtils {
      *
      * @return the long source
      */
-    public static ColumnSource<DateTime> longToDateTimeSource(ColumnSource<Long> source) {
-        if (source.allowsReinterpret(DateTime.class)) {
-            return source.reinterpret(DateTime.class);
+    public static ColumnSource<Instant> longToDateTimeSource(ColumnSource<Long> source) {
+        if (source.allowsReinterpret(Instant.class)) {
+            return source.reinterpret(Instant.class);
         } else {
             return new LongAsDateTimeColumnSource(source);
         }
@@ -102,7 +102,7 @@ public class ReinterpretUtils {
      *
      * @return the long source or null if it could not be reinterpreted
      */
-    public static WritableColumnSource<Long> writableDateTimeToLongSource(WritableColumnSource<DateTime> source) {
+    public static WritableColumnSource<Long> writableDateTimeToLongSource(WritableColumnSource<Instant> source) {
         if (source.allowsReinterpret(long.class)) {
             return (WritableColumnSource<Long>) source.reinterpret(long.class);
         }
@@ -167,8 +167,8 @@ public class ReinterpretUtils {
         if (source.getType() == Boolean.class || source.getType() == boolean.class) {
             return booleanToByteSource((ColumnSource<Boolean>) source);
         }
-        if (source.getType() == DateTime.class) {
-            return dateTimeToLongSource((ColumnSource<DateTime>) source);
+        if (source.getType() == Instant.class) {
+            return dateTimeToLongSource((ColumnSource<Instant>) source);
         }
         if (source.getType() == Instant.class) {
             return instantToLongSource((ColumnSource<Instant>) source);
@@ -191,8 +191,6 @@ public class ReinterpretUtils {
         WritableColumnSource<?> result = null;
         if (source.getType() == Boolean.class || source.getType() == boolean.class) {
             result = writableBooleanToByteSource((WritableColumnSource<Boolean>) source);
-        } else if (source.getType() == DateTime.class) {
-            result = writableDateTimeToLongSource((WritableColumnSource<DateTime>) source);
         } else if (source.getType() == Instant.class) {
             result = writableInstantToLongSource((WritableColumnSource<Instant>) source);
         } else if (source.getType() == ZonedDateTime.class) {
@@ -212,7 +210,7 @@ public class ReinterpretUtils {
         if (dataType == Boolean.class || dataType == boolean.class) {
             return ChunkType.Byte;
         }
-        if (dataType == DateTime.class || dataType == Instant.class || dataType == ZonedDateTime.class) {
+        if (dataType == Instant.class || dataType == ZonedDateTime.class) {
             return ChunkType.Long;
         }
         return ChunkType.fromElementType(dataType);
@@ -229,7 +227,7 @@ public class ReinterpretUtils {
         if (dataType == Boolean.class || dataType == boolean.class) {
             return byte.class;
         }
-        if (dataType == DateTime.class || dataType == Instant.class || dataType == ZonedDateTime.class) {
+        if (dataType == Instant.class dataType == ZonedDateTime.class) {
             return long.class;
         }
         return dataType;
@@ -258,12 +256,6 @@ public class ReinterpretUtils {
             // noinspection unchecked
             return source.allowsReinterpret(Boolean.class) ? source.reinterpret(Boolean.class)
                     : new BoxedColumnSource.OfBoolean((ColumnSource<Byte>) source);
-        }
-        if (originalType == DateTime.class) {
-            validateSourceType.accept(long.class);
-            // noinspection unchecked
-            return source.allowsReinterpret(DateTime.class) ? source.reinterpret(DateTime.class)
-                    : new BoxedColumnSource.OfDateTime((ColumnSource<Long>) source);
         }
         if (originalType == Instant.class) {
             validateSourceType.accept(long.class);

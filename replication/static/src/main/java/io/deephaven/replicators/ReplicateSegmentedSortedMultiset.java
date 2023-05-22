@@ -129,7 +129,7 @@ public class ReplicateSegmentedSortedMultiset {
                 indent(Collections.singletonList("Class<?> type,"), 12));
         lines = replaceRegion(lines, "ResultAssignment",
                 indent(Arrays.asList(
-                        "if(type == DateTime.class) {",
+                        "if(type == Instant.class) {",
                         externalResultSetter,
                         "} else {",
                         "    externalResult = internalResult;",

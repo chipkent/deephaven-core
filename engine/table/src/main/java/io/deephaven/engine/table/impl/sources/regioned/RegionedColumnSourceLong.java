@@ -14,7 +14,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 
-import io.deephaven.time.DateTime;
 import io.deephaven.engine.table.ColumnSource;
 import io.deephaven.engine.table.impl.sources.LocalDateWrapperSource;
 import io.deephaven.engine.table.impl.sources.LocalTimeWrapperSource;
@@ -67,8 +66,7 @@ abstract class RegionedColumnSourceLong<ATTR extends Values>
             return true;
         }
 
-        return alternateDataType == Instant.class ||
-                alternateDataType == DateTime.class;
+        return alternateDataType == Instant.class;
     }
 
     @SuppressWarnings("unchecked")
@@ -76,8 +74,6 @@ abstract class RegionedColumnSourceLong<ATTR extends Values>
     protected <ALTERNATE_DATA_TYPE> ColumnSource<ALTERNATE_DATA_TYPE> doReinterpret(@NotNull Class<ALTERNATE_DATA_TYPE> alternateDataType) {
         if(alternateDataType == Instant.class) {
             return (ColumnSource<ALTERNATE_DATA_TYPE>) toInstant();
-        } else if(alternateDataType == DateTime.class) {
-            return (ColumnSource<ALTERNATE_DATA_TYPE>) toDateTime();
         }
 
         return super.doReinterpret(alternateDataType);
@@ -91,11 +87,6 @@ abstract class RegionedColumnSourceLong<ATTR extends Values>
     public ColumnSource<Instant> toInstant() {
         //noinspection unchecked
         return new RegionedColumnSourceInstant((RegionedColumnSourceLong<Values>) this);
-    }
-
-    public ColumnSource<DateTime> toDateTime() {
-        //noinspection unchecked
-        return new RegionedColumnSourceDateTime((RegionedColumnSourceLong<Values>) this);
     }
 
     @Override

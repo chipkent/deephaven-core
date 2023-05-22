@@ -12,7 +12,6 @@ import io.deephaven.engine.table.impl.TableUpdateImpl;
 import io.deephaven.engine.rowset.chunkattributes.OrderedRowKeys;
 import io.deephaven.internal.log.LoggerFactory;
 import io.deephaven.function.Numeric;
-import io.deephaven.time.DateTime;
 import io.deephaven.hash.KeyedLongObjectHash;
 import io.deephaven.hash.KeyedLongObjectHashMap;
 import io.deephaven.hash.KeyedLongObjectKey;
@@ -30,6 +29,7 @@ import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -284,7 +284,7 @@ public class RunChartDownsample implements Function<Table, Table> {
             this.key = key;
 
             final ColumnSource xSource = sourceTable.getColumnSource(key.xColumnName);
-            if (xSource.getType() == DateTime.class) {
+            if (xSource.getType() == Instant.class) {
                 this.xColumnSource = ReinterpretUtils.dateTimeToLongSource(xSource);
             } else if (xSource.allowsReinterpret(long.class)) {
                 // noinspection unchecked

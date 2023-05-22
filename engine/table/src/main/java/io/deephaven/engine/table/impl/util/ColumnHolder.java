@@ -19,7 +19,6 @@ import io.deephaven.engine.rowset.RowSequenceFactory;
 import io.deephaven.engine.table.ChunkSink;
 import io.deephaven.engine.table.WritableColumnSource;
 import io.deephaven.vector.ObjectVector;
-import io.deephaven.time.DateTime;
 import io.deephaven.api.util.NameValidator;
 import io.deephaven.engine.table.impl.sources.ArrayBackedColumnSource;
 import io.deephaven.engine.table.ColumnSource;
@@ -151,7 +150,6 @@ public class ColumnHolder<T> {
             throw new IllegalArgumentException("Data must be provided as an array");
         }
         if (!arrayData.getClass().getComponentType().isAssignableFrom(dataType)
-                && !(dataType == DateTime.class && arrayData.getClass().getComponentType() == long.class)
                 && !(dataType == Instant.class && arrayData.getClass().getComponentType() == long.class)
                 && !(dataType == Boolean.class && arrayData.getClass().getComponentType() == byte.class)) {
             throw new IllegalArgumentException(
@@ -203,8 +201,8 @@ public class ColumnHolder<T> {
      * @param data column data (long integers representing nanos since the epoch)
      * @return a DateTime column holder implemented with longs for storage
      */
-    public static ColumnHolder<DateTime> getDateTimeColumnHolder(String name, boolean grouped, long... data) {
-        return new ColumnHolder<>(name, grouped, DateTime.class, null, data);
+    public static ColumnHolder<Instant> getDateTimeColumnHolder(String name, boolean grouped, long... data) {
+        return new ColumnHolder<>(name, grouped, Instant.class, null, data);
     }
 
     /**
@@ -217,9 +215,9 @@ public class ColumnHolder<T> {
      * @param chunkData column data (long integers representing nanos since the epoch)
      * @return a DateTime column holder implemented with longs for storage
      */
-    public static ColumnHolder<DateTime> getDateTimeColumnHolder(String name, boolean grouped,
+    public static ColumnHolder<Instant> getDateTimeColumnHolder(String name, boolean grouped,
             Chunk<Values> chunkData) {
-        return new ColumnHolder<>(true, name, DateTime.class, null, grouped, chunkData);
+        return new ColumnHolder<>(true, name, Instant.class, null, grouped, chunkData);
     }
 
     /**
@@ -272,7 +270,7 @@ public class ColumnHolder<T> {
         if (chunkData == null) {
             if (arrayData.getClass().getComponentType().equals(dataType)) {
                 return ArrayBackedColumnSource.getMemoryColumnSourceUntyped(arrayData, dataType, componentType);
-            } else if (dataType.equals(DateTime.class) && arrayData.getClass().getComponentType().equals(long.class)) {
+            } else if (dataType.equals(Instant.class) && arrayData.getClass().getComponentType().equals(long.class)) {
                 return ArrayBackedColumnSource.getDateTimeMemoryColumnSource((long[]) arrayData);
             } else {
                 throw new IllegalStateException("Unsupported column holder data & type: " + dataType.getName() + ", "
@@ -282,7 +280,7 @@ public class ColumnHolder<T> {
 
         Assert.eqNull(arrayData, "arrayData");
 
-        if (dataType.equals(DateTime.class) && chunkData.getChunkType() == ChunkType.Long) {
+        if (dataType.equals(Instant.class) && chunkData.getChunkType() == ChunkType.Long) {
             return ArrayBackedColumnSource.getDateTimeMemoryColumnSource(chunkData.asLongChunk());
         }
 

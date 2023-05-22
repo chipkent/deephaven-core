@@ -9,32 +9,34 @@ import io.deephaven.time.DateTime;
 import io.deephaven.time.DateTimeUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Instant;
+
 /**
- * Immutable2DArraySource for {@link DateTime}s. Allows reinterpretation as long.
+ * Immutable2DArraySource for {@link Instant}s. Allows reinterpretation as long.
  */
-public class Immutable2DDateTimeArraySource extends Immutable2DNanosBasedTimeArraySource<DateTime>
+public class Immutable2DDateTimeArraySource extends Immutable2DNanosBasedTimeArraySource<Instant>
         implements ImmutableColumnSourceGetDefaults.ForLongAsDateTime {
 
     public Immutable2DDateTimeArraySource() {
-        super(DateTime.class);
+        super(Instant.class);
     }
 
     public Immutable2DDateTimeArraySource(final @NotNull Immutable2DLongArraySource nanoSource) {
-        super(DateTime.class, nanoSource);
+        super(Instant.class, nanoSource);
     }
 
     @Override
-    protected DateTime makeValue(long nanos) {
-        return DateTimeUtils.epochNanosToDateTime(nanos);
+    protected Instant makeValue(long nanos) {
+        return DateTimeUtils.epochNanosToInstant(nanos);
     }
 
     @Override
-    protected long toNanos(DateTime value) {
+    protected long toNanos(Instant value) {
         return DateTimeUtils.epochNanos(value);
     }
 
     @Override
-    public ColumnSource<DateTime> toDateTime() {
+    public ColumnSource<Instant> toDateTime() {
         return this;
     }
 }

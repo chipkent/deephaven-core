@@ -7,17 +7,17 @@ import io.deephaven.chunk.attributes.Any;
 import io.deephaven.time.DateTimeUtils;
 import io.deephaven.vector.ObjectVector;
 import io.deephaven.vector.ObjectVectorDirect;
-import io.deephaven.time.DateTime;
 import io.deephaven.configuration.Configuration;
 import io.deephaven.chunk.ChunkType;
 import org.apache.parquet.io.api.Binary;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.ByteBuffer;
+import java.time.Instant;
 import java.time.ZoneId;
 
 /**
- * Parquet {@link ToPage} implementation for {@link DateTime}s stored as Int96s representing an Impala
+ * Parquet {@link ToPage} implementation for {@link Instant}s stored as Int96s representing an Impala
  * format Timestamp (nanoseconds of day and Julian date encoded as 8 bytes and 4 bytes, respectively)
  *
  */
@@ -39,12 +39,12 @@ public class ToDateTimePageFromInt96<ATTR extends Any> implements ToPage<ATTR, l
     }
 
     public static <ATTR extends Any> ToDateTimePageFromInt96<ATTR> create(@NotNull Class<?> nativeType) {
-        if (DateTime.class.equals(nativeType)) {
+        if (Instant.class.equals(nativeType)) {
             //noinspection unchecked
             return INSTANCE;
         }
 
-        throw new IllegalArgumentException("The native type for a DateTime column is " + nativeType.getCanonicalName());
+        throw new IllegalArgumentException("The native type for a Instant column is " + nativeType.getCanonicalName());
     }
 
     private ToDateTimePageFromInt96() {
@@ -77,8 +77,8 @@ public class ToDateTimePageFromInt96<ATTR extends Any> implements ToPage<ATTR, l
 
     @Override
     @NotNull
-    public final Class<DateTime> getNativeComponentType() {
-        return DateTime.class;
+    public final Class<Instant> getNativeComponentType() {
+        return Instant.class;
     }
 
     @Override
@@ -100,12 +100,12 @@ public class ToDateTimePageFromInt96<ATTR extends Any> implements ToPage<ATTR, l
 
     @Override
     @NotNull
-    public final ObjectVector<DateTime> makeVector(@NotNull final long[] result) {
-        final DateTime[] to = new DateTime[result.length];
+    public final ObjectVector<Instant> makeVector(@NotNull final long[] result) {
+        final Instant[] to = new Instant[result.length];
 
         final int resultLength = result.length;
         for (int ri = 0; ri < resultLength; ++ri) {
-            to[ri] = DateTimeUtils.epochNanosToDateTime(result[ri]);
+            to[ri] = DateTimeUtils.epochNanosToInstant(result[ri]);
         }
 
         return new ObjectVectorDirect<>(to);

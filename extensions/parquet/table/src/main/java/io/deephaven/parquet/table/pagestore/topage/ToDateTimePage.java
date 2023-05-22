@@ -7,10 +7,10 @@ import io.deephaven.chunk.attributes.Any;
 import io.deephaven.time.DateTimeUtils;
 import io.deephaven.vector.ObjectVector;
 import io.deephaven.vector.ObjectVectorDirect;
-import io.deephaven.time.DateTime;
 import org.apache.parquet.schema.LogicalTypeAnnotation;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Instant;
 import java.util.function.LongFunction;
 import java.util.function.LongUnaryOperator;
 
@@ -24,9 +24,9 @@ public abstract class ToDateTimePage<ATTR extends Any> extends ToLongPage<ATTR> 
     private static final ToDateTimePage NANOS_INSTANCE = new ToDateTimePageFromNanos();
 
     @SuppressWarnings("unchecked")
-    public static <ATTR extends Any> ToPage<ATTR, DateTime[]> create(@NotNull final Class<?> nativeType,
+    public static <ATTR extends Any> ToPage<ATTR, Instant[]> create(@NotNull final Class<?> nativeType,
             final LogicalTypeAnnotation.TimeUnit unit) {
-        if (DateTime.class.equals(nativeType)) {
+        if (Instant.class.equals(nativeType)) {
             switch (unit) {
                 case MILLIS:
                     return MILLIS_INSTANCE;
@@ -40,14 +40,14 @@ public abstract class ToDateTimePage<ATTR extends Any> extends ToLongPage<ATTR> 
         }
 
         throw new IllegalArgumentException(
-                "The native type for a DateTime column is " + nativeType.getCanonicalName());
+                "The native type for a Instant column is " + nativeType.getCanonicalName());
     }
 
     protected ToDateTimePage() {}
 
-    protected static ObjectVector<DateTime> makeVectorHelper(final long[] result,
-            final LongFunction<DateTime> unitToTime) {
-        DateTime[] to = new DateTime[result.length];
+    protected static ObjectVector<Instant> makeVectorHelper(final long[] result,
+            final LongFunction<Instant> unitToTime) {
+        Instant[] to = new Instant[result.length];
 
         for (int i = 0; i < result.length; ++i) {
             to[i] = unitToTime.apply(result[i]);
@@ -66,23 +66,23 @@ public abstract class ToDateTimePage<ATTR extends Any> extends ToLongPage<ATTR> 
 
     @Override
     @NotNull
-    public final Class<DateTime> getNativeComponentType() {
-        return DateTime.class;
+    public final Class<Instant> getNativeComponentType() {
+        return Instant.class;
     }
 
     private static final class ToDateTimePageFromNanos<ATTR extends Any> extends ToDateTimePage<ATTR> {
         @Override
         @NotNull
-        public ObjectVector<DateTime> makeVector(long[] result) {
-            return makeVectorHelper(result, DateTimeUtils::epochNanosToDateTime);
+        public ObjectVector<Instant> makeVector(long[] result) {
+            return makeVectorHelper(result, DateTimeUtils::epochNanosToInstant);
         }
     }
 
     private static final class ToDateTimePageFromMicros<ATTR extends Any> extends ToDateTimePage<ATTR> {
         @Override
         @NotNull
-        public ObjectVector<DateTime> makeVector(long[] result) {
-            return makeVectorHelper(result, DateTimeUtils::epochMicrosToDateTime);
+        public ObjectVector<Instant> makeVector(long[] result) {
+            return makeVectorHelper(result, DateTimeUtils::epochMicrosToInstant);
         }
 
         @Override
@@ -94,8 +94,8 @@ public abstract class ToDateTimePage<ATTR extends Any> extends ToLongPage<ATTR> 
     private static final class ToDateTimePageFromMillis<ATTR extends Any> extends ToDateTimePage<ATTR> {
         @Override
         @NotNull
-        public ObjectVector<DateTime> makeVector(long[] result) {
-            return makeVectorHelper(result, DateTimeUtils::epochMillisToDateTime);
+        public ObjectVector<Instant> makeVector(long[] result) {
+            return makeVectorHelper(result, DateTimeUtils::epochMillisToInstant);
         }
 
         @Override

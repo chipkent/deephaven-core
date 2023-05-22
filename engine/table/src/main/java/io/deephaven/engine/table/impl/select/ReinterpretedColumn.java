@@ -23,7 +23,6 @@ import io.deephaven.engine.table.impl.sources.LongAsLocalTimeColumnSource;
 import io.deephaven.engine.table.impl.sources.LongAsZonedDateTimeColumnSource;
 import io.deephaven.engine.table.impl.sources.ReinterpretUtils;
 import io.deephaven.engine.table.impl.util.TableTimeConversions;
-import io.deephaven.time.DateTime;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
@@ -127,7 +126,6 @@ public class ReinterpretedColumn<S, D> implements SelectColumn {
                     destDataType == LocalDate.class ||
                     destDataType == LocalTime.class ||
                     destDataType == Instant.class ||
-                    destDataType == DateTime.class ||
                     destDataType == long.class ||
                     destDataType == Long.class;
 
@@ -138,7 +136,7 @@ public class ReinterpretedColumn<S, D> implements SelectColumn {
                             "Source column " + sourceName + " (Class=" + localSourceColumnSource.getClass()
                                     + ") - cannot be reinterpreted as " + destDataType);
                 }
-            } else if (sourceDataType == DateTime.class ||
+            } else if (sourceDataType == Instant.class ||
                     sourceDataType == Instant.class ||
                     sourceDataType == ZonedDateTime.class ||
                     sourceDataType == long.class || sourceDataType == Long.class) {
@@ -215,7 +213,7 @@ public class ReinterpretedColumn<S, D> implements SelectColumn {
                 return checkResult.apply(((ConvertableTimeSource) sourceColumnSource).toLocalTime(zone));
             } else if (destDataType == Instant.class) {
                 return checkResult.apply(((ConvertableTimeSource) sourceColumnSource).toInstant());
-            } else if (destDataType == DateTime.class) {
+            } else if (destDataType == Instant.class) {
                 return checkResult.apply(((ConvertableTimeSource) sourceColumnSource).toDateTime());
             } else if (destDataType == long.class || destDataType == Long.class) {
                 return checkResult.apply(((ConvertableTimeSource) sourceColumnSource).toEpochNano());
@@ -239,10 +237,7 @@ public class ReinterpretedColumn<S, D> implements SelectColumn {
         // we have to create even more garbage objects just to get the "time at midnight". Users should just do that
         // directly.
         final ColumnSource<Long> intermediate;
-        if (sourceDataType == DateTime.class) {
-            // noinspection unchecked
-            intermediate = ReinterpretUtils.dateTimeToLongSource((ColumnSource<DateTime>) sourceColumnSource);
-        } else if (sourceDataType == Instant.class) {
+        if (sourceDataType == Instant.class) {
             // noinspection unchecked
             intermediate = ReinterpretUtils.instantToLongSource((ColumnSource<Instant>) sourceColumnSource);
         } else if (sourceDataType == ZonedDateTime.class) {
@@ -259,8 +254,6 @@ public class ReinterpretedColumn<S, D> implements SelectColumn {
         // Otherwise we'll have to go from long back to a wrapped typed source.
         if (destDataType == Long.class || destDataType == long.class) {
             return checkResult.apply(intermediate);
-        } else if (destDataType == DateTime.class) {
-            return checkResult.apply(new LongAsDateTimeColumnSource(intermediate));
         } else if (destDataType == ZonedDateTime.class) {
             return checkResult.apply(new LongAsZonedDateTimeColumnSource(intermediate, zone));
         } else if (destDataType == Instant.class) {

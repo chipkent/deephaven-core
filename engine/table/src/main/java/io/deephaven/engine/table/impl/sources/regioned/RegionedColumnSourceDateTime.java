@@ -20,40 +20,40 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 /**
- * Regioned column source implementation for columns of {@link DateTime}s.
+ * Regioned column source implementation for columns of {@link Instant}s.
  */
 final class RegionedColumnSourceDateTime
-        extends RegionedColumnSourceReferencing<DateTime, Values, Long, ColumnRegionLong<Values>>
-        implements ColumnSourceGetDefaults.ForObject<DateTime>, ConvertableTimeSource {
+        extends RegionedColumnSourceReferencing<Instant, Values, Long, ColumnRegionLong<Values>>
+        implements ColumnSourceGetDefaults.ForObject<Instant>, ConvertableTimeSource {
 
     public RegionedColumnSourceDateTime() {
         this(new RegionedColumnSourceLong.AsValues());
     }
 
     public RegionedColumnSourceDateTime(@NotNull final RegionedColumnSourceLong<Values> inner) {
-        super(ColumnRegionLong.createNull(PARAMETERS.regionMask), DateTime.class, inner);
+        super(ColumnRegionLong.createNull(PARAMETERS.regionMask), Instant.class, inner);
     }
 
     @Override
     public void convertRegion(
             @NotNull final WritableChunk<? super Values> destination,
             @NotNull final Chunk<? extends Values> source, RowSequence rowSequence) {
-        final WritableObjectChunk<DateTime, ? super Values> objectChunk = destination.asWritableObjectChunk();
+        final WritableObjectChunk<Instant, ? super Values> objectChunk = destination.asWritableObjectChunk();
         final LongChunk<? extends Values> longChunk = source.asLongChunk();
 
         final int size = objectChunk.size();
         final int length = longChunk.size();
 
         for (int i = 0; i < length; ++i) {
-            objectChunk.set(size + i, DateTimeUtils.epochNanosToDateTime(longChunk.get(i)));
+            objectChunk.set(size + i, DateTimeUtils.epochNanosToInstant(longChunk.get(i)));
         }
         objectChunk.setSize(size + length);
     }
 
     @Override
-    public DateTime get(final long rowKey) {
+    public Instant get(final long rowKey) {
         return rowKey == RowSequence.NULL_ROW_KEY ? null
-                : DateTimeUtils.epochNanosToDateTime(getNativeSource().lookupRegion(rowKey).getLong(rowKey));
+                : DateTimeUtils.epochNanosToInstant(getNativeSource().lookupRegion(rowKey).getLong(rowKey));
     }
 
     @Override
@@ -81,11 +81,6 @@ final class RegionedColumnSourceDateTime
     public ColumnSource<LocalTime> toLocalTime(@NotNull final ZoneId zone) {
         return RegionedColumnSourceZonedDateTime.asLocalTime(zone,
                 (RegionedColumnSourceLong<Values>) getNativeSource());
-    }
-
-    @Override
-    public ColumnSource<DateTime> toDateTime() {
-        return this;
     }
 
     @Override

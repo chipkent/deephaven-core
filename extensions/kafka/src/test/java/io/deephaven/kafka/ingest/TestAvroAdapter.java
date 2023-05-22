@@ -5,7 +5,6 @@ package io.deephaven.kafka.ingest;
 
 import io.deephaven.chunk.attributes.Values;
 import io.deephaven.engine.table.TableDefinition;
-import io.deephaven.time.DateTime;
 import io.deephaven.time.DateTimeUtils;
 import io.deephaven.chunk.*;
 import io.deephaven.util.BooleanUtils;
@@ -20,6 +19,7 @@ import org.junit.Test;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -92,12 +92,12 @@ public class TestAvroAdapter {
 
         final String[] names = new String[] {"last_name", "number", "truthiness", "timestamp", "timestampMicros",
                 "timeMillis", "timeMicros"};
-        final Class<?>[] types = new Class[] {String.class, int.class, boolean.class, DateTime.class, DateTime.class,
+        final Class<?>[] types = new Class[] {String.class, int.class, boolean.class, Instant.class, Instant.class,
                 int.class, long.class};
         final TableDefinition definition = TableDefinition.from(Arrays.asList(names), Arrays.asList(types));
 
-        final DateTime dt1 = DateTimeUtils.parseDateTime("2021-08-23T12:00:00.123456789 NY");
-        final DateTime dt2 = DateTimeUtils.parseDateTime("2021-08-23T13:00:00.500600700 NY");
+        final Instant dt1 = DateTimeUtils.parseInstant("2021-08-23T12:00:00.123456789 NY");
+        final Instant dt2 = DateTimeUtils.parseInstant("2021-08-23T13:00:00.500600700 NY");
 
         final GenericData.Record genericRecord1 = new GenericData.Record(avroSchema);
         genericRecord1.put("last_name", "LN1");

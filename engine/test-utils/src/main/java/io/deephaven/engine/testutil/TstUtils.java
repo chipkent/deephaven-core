@@ -50,7 +50,7 @@ import io.deephaven.engine.util.TableDiff;
 import io.deephaven.engine.util.TableTools;
 import io.deephaven.stringset.HashStringSet;
 import io.deephaven.stringset.StringSet;
-import io.deephaven.time.DateTime;
+import io.deephaven.time.DateTimeUtils;
 import io.deephaven.util.QueryConstants;
 import io.deephaven.util.SafeCloseable;
 import io.deephaven.util.type.TypeUtils;
@@ -401,10 +401,10 @@ public class TstUtils {
         return TableTools.col(colName, data);
     }
 
-    public static ColumnHolder<DateTime> getRandomDateTimeCol(String colName, int size, Random random) {
-        final DateTime[] data = new DateTime[size];
+    public static ColumnHolder<Instant> getRandomDateTimeCol(String colName, int size, Random random) {
+        final Instant[] data = new Instant[size];
         for (int i = 0; i < data.length; i++) {
-            data[i] = new DateTime(random.nextLong());
+            data[i] = DateTimeUtils.epochNanosToInstant(random.nextLong());
         }
         return ColumnHolder.createColumnHolder(colName, false, data);
     }
@@ -629,9 +629,6 @@ public class TstUtils {
             } else if (unboxedType == double.class) {
                 // noinspection unchecked
                 result = (AbstractColumnSource<T>) new ImmutableDoubleTestSource(rowSet, chunkData);
-            } else if (unboxedType == DateTime.class) {
-                // noinspection unchecked
-                result = (AbstractColumnSource<T>) new ImmutableDateTimeTestSource(rowSet, chunkData);
             } else if (unboxedType == Instant.class) {
                 // noinspection unchecked
                 result = (AbstractColumnSource<T>) new ImmutableInstantTestSource(rowSet, chunkData);
@@ -661,9 +658,6 @@ public class TstUtils {
             } else if (unboxedType == double.class) {
                 // noinspection unchecked
                 result = (AbstractColumnSource<T>) new DoubleTestSource(rowSet, chunkData);
-            } else if (unboxedType == DateTime.class) {
-                // noinspection unchecked
-                result = (AbstractColumnSource<T>) new DateTimeTestSource(rowSet, chunkData);
             } else if (unboxedType == Instant.class) {
                 // noinspection unchecked
                 result = (AbstractColumnSource<T>) new InstantTestSource(rowSet, chunkData);

@@ -150,8 +150,8 @@ public class TestAggBy extends RefreshingTableTestCase {
                         new IntGenerator(10, 100),
                         new SetGenerator<>(10.1, 20.1, 30.1),
                         new FloatGenerator(0, 10.0f),
-                        new UnsortedDateTimeGenerator(DateTimeUtils.parseDateTime("2020-03-17T12:00:00 NY"),
-                                DateTimeUtils.parseDateTime("2020-03-18T12:00:00 NY")),
+                        new UnsortedDateTimeGenerator(DateTimeUtils.parseInstant("2020-03-17T12:00:00 NY"),
+                                DateTimeUtils.parseInstant("2020-03-18T12:00:00 NY")),
                         new BooleanGenerator(),
                         new BigIntegerGenerator(),
                         new BigDecimalGenerator()));

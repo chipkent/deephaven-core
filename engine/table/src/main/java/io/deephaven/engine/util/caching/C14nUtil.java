@@ -31,7 +31,7 @@ public class C14nUtil {
             CompressedString.class,
 
             // DateTimes used in aggregations are most likely expirations.
-            // DateTime.class,
+            // Instant.class,
 
             // If we're going to bother canonicalizing key members, we might as well do the keys themselves.
             // ArrayTuple.class

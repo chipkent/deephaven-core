@@ -8,7 +8,6 @@ package io.deephaven.engine.table.impl.updateby.minmax;
 import io.deephaven.engine.table.ColumnSource;
 import java.util.Map;
 import java.util.Collections;
-import io.deephaven.time.DateTime;
 import java.time.Instant;
 import io.deephaven.engine.table.impl.sources.ReinterpretUtils;
 
@@ -79,7 +78,7 @@ public class LongCumMinMaxOperator extends BaseLongUpdateByOperator {
     @Override
     public Map<String, ColumnSource<?>> getOutputColumns() {
         final ColumnSource<?> actualOutput;
-        if(type == DateTime.class) {
+        if(type == Instant.class) {
             actualOutput = ReinterpretUtils.longToDateTimeSource(outputSource);
         } else {
             actualOutput = outputSource;

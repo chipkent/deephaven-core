@@ -9,7 +9,6 @@ import io.deephaven.engine.table.MatchPair;
 import io.deephaven.engine.table.Table;
 import io.deephaven.engine.table.impl.select.MatchPairFactory;
 import io.deephaven.engine.table.impl.select.ReinterpretedColumn;
-import io.deephaven.time.DateTime;
 import io.deephaven.util.annotations.ScriptApi;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,7 +19,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 /**
- * This class contains static methods to support conversions between various time types such as {@link DateTime},
+ * This class contains static methods to support conversions between various time types such as {@link Instant},
  * {@link Instant}, {@link ZonedDateTime}, {@link LocalDate}, {@link LocalTime}, and {@code long}.
  *
  * <p>
@@ -268,30 +267,6 @@ public class TableTimeConversions {
     }
     // endregion
 
-    // region to DateTime
-    /**
-     * Convert the specified column in the table to a {@link DateTime} column. The column may be specified as a single
-     * value "Column" or a pair "NewColumn = OriginalColumn"
-     *
-     * @param source The source table
-     * @param column The column to convert, in {@link MatchPair} format
-     * @return the {@link Table} with the specified column converted to {@link DateTime}.
-     */
-    public static Table asDateTime(final @NotNull Table source, @NotNull final String column) {
-        return asDateTime(source, MatchPairFactory.getExpression(Require.neqNull(column, "column")));
-    }
-
-    /**
-     * Convert the specified column in the table to a {@link DateTime} column.
-     *
-     * @param source The source table
-     * @param matchPair The {@link MatchPair} of columns
-     * @return the {@link Table} with the specified column converted to {@link DateTime}.
-     */
-    public static Table asDateTime(final @NotNull Table source, @NotNull final MatchPair matchPair) {
-        return convertTimeColumn(source, matchPair, DateTime.class);
-    }
-    // endregion
 
     // region to EpochNanos
     /**
@@ -325,7 +300,7 @@ public class TableTimeConversions {
      * @return true if the type is one of the useable time types
      */
     public static boolean isTimeType(final @NotNull Class<?> type) {
-        return type == DateTime.class || type == Instant.class || type == ZonedDateTime.class ||
+        return type == Instant.class || type == ZonedDateTime.class ||
                 type == LocalDate.class || type == LocalTime.class;
     }
 

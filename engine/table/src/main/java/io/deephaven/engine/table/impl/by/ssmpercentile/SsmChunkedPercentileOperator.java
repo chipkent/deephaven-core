@@ -11,7 +11,6 @@ import io.deephaven.configuration.Configuration;
 import io.deephaven.engine.table.ColumnSource;
 import io.deephaven.engine.rowset.chunkattributes.RowKeys;
 import io.deephaven.engine.table.WritableColumnSource;
-import io.deephaven.time.DateTime;
 import io.deephaven.engine.table.impl.by.IterativeChunkedAggregationOperator;
 import io.deephaven.engine.table.impl.sources.*;
 import io.deephaven.chunk.*;
@@ -20,6 +19,7 @@ import io.deephaven.engine.table.impl.util.compact.CompactKernel;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -46,7 +46,7 @@ public class SsmChunkedPercentileOperator implements IterativeChunkedAggregation
     public SsmChunkedPercentileOperator(Class<?> type, double percentile, boolean averageEvenlyDivided, String name) {
         this.name = name;
         this.ssms = new ObjectArraySource<>(SegmentedSortedMultiSet.class);
-        final boolean isDateTime = type == DateTime.class;
+        final boolean isDateTime = type == Instant.class;
         if (isDateTime) {
             chunkType = ChunkType.Long;
         } else {
@@ -142,7 +142,7 @@ public class SsmChunkedPercentileOperator implements IterativeChunkedAggregation
             WritableColumnSource resultColumn) {
         if (type == Boolean.class) {
             return new BooleanPercentileTypeHelper(percentile, resultColumn);
-        } else if (type == DateTime.class) {
+        } else if (type == Instant.class) {
             return new DateTimePercentileTypeHelper(percentile, resultColumn);
         } else {
             return new ObjectPercentileTypeHelper(percentile, resultColumn);

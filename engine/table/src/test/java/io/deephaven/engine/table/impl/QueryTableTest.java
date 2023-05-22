@@ -449,7 +449,7 @@ public class QueryTableTest extends QueryTableTestBase {
         final Table source = emptyTable(5).select("dt = nanosToTime(ii)", "n = ii");
         final Table result = source.dateTimeColumnAsNanos("dt");
         assertEquals((long[]) result.getColumn(0).getDirect(), LongStream.range(0, 5).toArray());
-        final Table reflexive = result.view(new ReinterpretedColumn<>("dt", long.class, "dt", DateTime.class));
+        final Table reflexive = result.view(new ReinterpretedColumn<>("dt", long.class, "dt", Instant.class));
         assertTableEquals(reflexive, source.dropColumns("n"));
         final Table sortedSource = source.sortDescending("dt").dropColumns("dt");
         final Table sortedResult = result.sortDescending("dt").dropColumns("dt");

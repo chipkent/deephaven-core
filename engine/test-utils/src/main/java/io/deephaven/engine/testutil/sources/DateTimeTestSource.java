@@ -9,17 +9,19 @@ import io.deephaven.engine.rowset.RowSet;
 import io.deephaven.engine.table.ColumnSource;
 import io.deephaven.engine.table.impl.AbstractColumnSource;
 import io.deephaven.engine.table.impl.MutableColumnSourceGetDefaults;
-import io.deephaven.time.DateTime;
+import io.deephaven.time.DateTimeUtils;
 import io.deephaven.util.QueryConstants;
 import io.deephaven.util.type.TypeUtils;
 import org.jetbrains.annotations.NotNull;
+
+import java.time.Instant;
 
 /**
  * DateTime column source that wraps and delegates the storage to an {@code TreeMapSource<Long>}. This also provides an
  * interface so this column can be interpreted as a long column (through UnboxedDateTimeTreeMapSource).
  */
-public class DateTimeTestSource extends AbstractColumnSource<DateTime>
-        implements MutableColumnSourceGetDefaults.ForObject<DateTime>, TestColumnSource<DateTime> {
+public class DateTimeTestSource extends AbstractColumnSource<Instant>
+        implements MutableColumnSourceGetDefaults.ForObject<Instant>, TestColumnSource<Instant> {
 
     private final LongTestSource longTestSource;
     private final UnboxedDateTimeTestSource alternateColumnSource;
@@ -28,7 +30,7 @@ public class DateTimeTestSource extends AbstractColumnSource<DateTime>
      * Create a new DateTimeTreeMapSource with no initial data.
      */
     public DateTimeTestSource() {
-        super(DateTime.class);
+        super(Instant.class);
         this.longTestSource = new LongTestSource();
         this.alternateColumnSource = new UnboxedDateTimeTestSource(this, longTestSource);
     }
@@ -39,8 +41,8 @@ public class DateTimeTestSource extends AbstractColumnSource<DateTime>
      * @param rowSet The row keys for the initial data
      * @param data The initial data
      */
-    public DateTimeTestSource(RowSet rowSet, DateTime[] data) {
-        super(DateTime.class);
+    public DateTimeTestSource(RowSet rowSet, Instant[] data) {
+        super(Instant.class);
         this.longTestSource = new LongTestSource(rowSet, mapData(data));
         this.alternateColumnSource = new UnboxedDateTimeTestSource(this, longTestSource);
     }
@@ -52,7 +54,7 @@ public class DateTimeTestSource extends AbstractColumnSource<DateTime>
      * @param data The initial data
      */
     public DateTimeTestSource(RowSet rowSet, Chunk<Values> data) {
-        super(DateTime.class);
+        super(Instant.class);
         if (data.getChunkType() == ChunkType.Long) {
             this.longTestSource = new LongTestSource(rowSet, data.asLongChunk());
         } else {
@@ -62,11 +64,11 @@ public class DateTimeTestSource extends AbstractColumnSource<DateTime>
         this.alternateColumnSource = new UnboxedDateTimeTestSource(this, longTestSource);
     }
 
-    private LongChunk<Values> mapData(DateTime[] data) {
+    private LongChunk<Values> mapData(Instant[] data) {
         final long[] result = new long[data.length];
         for (int ii = 0; ii < result.length; ++ii) {
-            final DateTime dt = data[ii];
-            result[ii] = dt == null ? QueryConstants.NULL_LONG : dt.getNanos();
+            final Instant dt = data[ii];
+            result[ii] = dt == null ? QueryConstants.NULL_LONG : DateTimeUtils.epochNanos(dt);
         }
         return LongChunk.chunkWrap(result);
     }
@@ -79,16 +81,16 @@ public class DateTimeTestSource extends AbstractColumnSource<DateTime>
                 result[ii] = TypeUtils.unbox(boxedLongChunk.get(ii));
             }
         } else {
-            final ObjectChunk<DateTime, Values> dtc = data.asObjectChunk();
+            final ObjectChunk<Instant, Values> dtc = data.asObjectChunk();
             for (int ii = 0; ii < result.length; ++ii) {
-                final DateTime dt = dtc.get(ii);
-                result[ii] = dt == null ? QueryConstants.NULL_LONG : dt.getNanos();
+                final Instant dt = dtc.get(ii);
+                result[ii] = dt == null ? QueryConstants.NULL_LONG : DateTimeUtils.epochNanos(dt);
             }
         }
         return LongChunk.chunkWrap(result);
     }
 
-    public void add(RowSet rowSet, DateTime[] data) {
+    public void add(RowSet rowSet, Instant[] data) {
         longTestSource.add(rowSet, mapData(data));
     }
 
@@ -114,9 +116,9 @@ public class DateTimeTestSource extends AbstractColumnSource<DateTime>
     }
 
     @Override
-    public DateTime get(long rowKey) {
+    public Instant get(long rowKey) {
         final Long v = longTestSource.get(rowKey);
-        return v == null ? null : new DateTime(v);
+        return v == null ? null : DateTimeUtils.epochNanosToInstant(v);
     }
 
     @Override
@@ -130,9 +132,9 @@ public class DateTimeTestSource extends AbstractColumnSource<DateTime>
     }
 
     @Override
-    public DateTime getPrev(long rowKey) {
+    public Instant getPrev(long rowKey) {
         final Long v = longTestSource.getPrev(rowKey);
-        return v == null ? null : new DateTime(v);
+        return v == null ? null : DateTimeUtils.epochNanosToInstant(v);
     }
 
     @Override

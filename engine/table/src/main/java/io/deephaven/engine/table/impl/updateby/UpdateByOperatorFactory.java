@@ -26,13 +26,13 @@ import io.deephaven.engine.table.impl.updateby.sum.*;
 import io.deephaven.engine.table.impl.util.WritableRowRedirection;
 import io.deephaven.hash.KeyedObjectHashMap;
 import io.deephaven.hash.KeyedObjectKey;
-import io.deephaven.time.DateTime;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -290,7 +290,7 @@ public class UpdateByOperatorFactory {
          */
         public boolean isTimeType(final @NotNull Class<?> type) {
             // TODO: extend time handling similar to enterprise (Instant, ZonedDateTime, LocalDate, LocalTime)
-            return type == DateTime.class;
+            return type == Instant.class;
         }
 
         @Override

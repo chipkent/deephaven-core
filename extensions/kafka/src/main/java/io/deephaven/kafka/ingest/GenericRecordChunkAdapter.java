@@ -4,7 +4,6 @@
 package io.deephaven.kafka.ingest;
 
 import io.deephaven.engine.table.TableDefinition;
-import io.deephaven.time.DateTime;
 import io.deephaven.chunk.*;
 import org.apache.avro.LogicalType;
 import org.apache.avro.LogicalTypes;
@@ -13,6 +12,7 @@ import org.apache.avro.generic.GenericContainer;
 import org.apache.avro.generic.GenericRecord;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.*;
 import java.util.function.IntFunction;
 import java.util.regex.Pattern;
@@ -98,7 +98,7 @@ public class GenericRecordChunkAdapter extends MultiFieldChunkAdapter {
             case Int:
                 return new GenericRecordIntFieldCopier(fieldPathStr, separator, schema);
             case Long:
-                if (dataType == DateTime.class) {
+                if (dataType == Instant.class) {
                     final LogicalType logicalType = getLogicalType(schema, fieldPathStr, separator);
                     if (logicalType == null) {
                         throw new IllegalArgumentException(
@@ -140,7 +140,7 @@ public class GenericRecordChunkAdapter extends MultiFieldChunkAdapter {
                                     "field=" + fieldPathStr + ", logical type=" + logicalType);
                 }
                 if (dataType.isArray()) {
-                    if (DateTime.class.isAssignableFrom(componentType)) {
+                    if (Instant.class.isAssignableFrom(componentType)) {
                         final LogicalType logicalType = getArrayTypeLogicalType(schema, fieldPathStr, separator);
                         if (logicalType == null) {
                             throw new IllegalArgumentException(

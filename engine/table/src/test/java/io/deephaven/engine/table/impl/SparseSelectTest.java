@@ -16,7 +16,6 @@ import io.deephaven.engine.updategraph.UpdateGraphProcessor;
 import io.deephaven.engine.util.TableTools;
 import io.deephaven.engine.testutil.junit4.EngineCleanup;
 import io.deephaven.test.types.OutOfBandTest;
-import io.deephaven.time.DateTime;
 import io.deephaven.time.DateTimeUtils;
 import io.deephaven.util.SafeCloseable;
 import junit.framework.TestCase;
@@ -70,8 +69,8 @@ public class SparseSelectTest {
                         new CharGenerator('a', 'z'),
                         new ByteGenerator(),
                         new ShortGenerator(),
-                        new UnsortedDateTimeGenerator(DateTimeUtils.parseDateTime("2019-01-10T00:00:00 NY"),
-                                DateTimeUtils.parseDateTime("2019-01-20T00:00:00 NY"))));
+                        new UnsortedDateTimeGenerator(DateTimeUtils.parseInstant("2019-01-10T00:00:00 NY"),
+                                DateTimeUtils.parseInstant("2019-01-20T00:00:00 NY"))));
 
         final Table sortedTable = queryTable.sort("intCol");
 

@@ -8,7 +8,6 @@ import io.deephaven.engine.table.ColumnDefinition;
 import io.deephaven.engine.table.ColumnSource;
 import io.deephaven.engine.table.impl.CodecLookup;
 import io.deephaven.stringset.StringSet;
-import io.deephaven.time.DateTime;
 import io.deephaven.util.codec.ExternalizableCodec;
 import io.deephaven.util.codec.SerializableCodec;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -24,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.Externalizable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.Instant;
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -363,7 +363,7 @@ class TypeInfos {
     private enum DateTimeType implements TypeInfo {
         INSTANCE;
 
-        private static final Set<Class<?>> clazzes = Collections.singleton(DateTime.class);
+        private static final Set<Class<?>> clazzes = Collections.singleton(Instant.class);
 
         @Override
         public Set<Class<?>> getTypes() {

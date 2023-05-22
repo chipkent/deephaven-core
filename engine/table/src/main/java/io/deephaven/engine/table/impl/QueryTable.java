@@ -57,7 +57,6 @@ import io.deephaven.util.annotations.InternalUseOnly;
 import io.deephaven.vector.Vector;
 import io.deephaven.engine.updategraph.UpdateGraphProcessor;
 import io.deephaven.engine.updategraph.NotificationQueue;
-import io.deephaven.time.DateTime;
 import io.deephaven.engine.table.impl.perf.QueryPerformanceRecorder;
 import io.deephaven.engine.util.systemicmarking.SystemicObjectTracker;
 import io.deephaven.engine.liveness.Liveness;
@@ -85,6 +84,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Array;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -867,7 +867,7 @@ public class QueryTable extends BaseTable<QueryTable> {
     @Override
     public Table dateTimeColumnAsNanos(String dateTimeColumnName, String nanosColumnName) {
         return viewOrUpdateView(Flavor.UpdateView,
-                new ReinterpretedColumn<>(dateTimeColumnName, DateTime.class, nanosColumnName, long.class));
+                new ReinterpretedColumn<>(dateTimeColumnName, Instant.class, nanosColumnName, long.class));
     }
 
     public static class FilteredTable extends QueryTable implements WhereFilter.RecomputeListener {
@@ -2368,12 +2368,12 @@ public class QueryTable extends BaseTable<QueryTable> {
      * @return the transformed column source, or the original column source if there is not a relevant transformation
      */
     static ColumnSource<?> maybeTransformToPrimitive(final ColumnSource<?> columnSource) {
-        if (DateTime.class.isAssignableFrom(columnSource.getType())) {
+        if (Instant.class.isAssignableFrom(columnSource.getType())) {
             if (columnSource.allowsReinterpret(long.class)) {
                 return columnSource.reinterpret(long.class);
             } else {
                 // noinspection unchecked
-                final ColumnSource<DateTime> columnSourceAsDateTime = (ColumnSource<DateTime>) columnSource;
+                final ColumnSource<Instant> columnSourceAsDateTime = (ColumnSource<Instant>) columnSource;
                 return new DateTimeAsLongColumnSource(columnSourceAsDateTime);
             }
         }

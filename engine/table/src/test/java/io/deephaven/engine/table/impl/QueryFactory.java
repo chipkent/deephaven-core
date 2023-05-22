@@ -3,8 +3,7 @@
  */
 package io.deephaven.engine.table.impl;
 
-import io.deephaven.time.DateTime;
-
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -55,7 +54,7 @@ public class QueryFactory {
     private static final String[] DEFAULT_COLUMN_NAMES = {"Timestamp", "MyString", "MyInt", "MyLong", "MyFloat",
             "MyDouble", "MyBoolean", "MyChar", "MyShort", "MyByte", "MyBigDecimal", "MyBigInteger"};
     private static final Class[] DEFAULT_COLUMN_TYPES =
-            {DateTime.class, String.class, Integer.class, Long.class, Float.class, Double.class, Boolean.class,
+            {Instant.class, String.class, Integer.class, Long.class, Float.class, Double.class, Boolean.class,
                     Character.class, short.class, byte.class, java.math.BigDecimal.class, java.math.BigInteger.class};
     // Copy and modify this block of code if you want to disable an operation.
     private static final String[] IMPLEMENTED_OPS = {"where", "merge", "flatten", "slice", "head", "tail", "headPct",
